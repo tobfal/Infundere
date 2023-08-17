@@ -1,3 +1,7 @@
 {
-  "creativetab.infunderetab": "Infundere"
+  "block.infundere.ore_infuser": "Ore Infuser",
+
+  "creativetab.infundere.infunderetab": "Infundere",
+
+  "tooltip.infundere.shift": "§e<SHIFT>§r"
 }
