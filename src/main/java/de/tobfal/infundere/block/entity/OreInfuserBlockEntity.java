@@ -2,17 +2,23 @@ package de.tobfal.infundere.block.entity;
 
 import de.tobfal.infundere.block.menu.OreInfuserMenu;
 import de.tobfal.infundere.init.Config;
+import de.tobfal.infundere.init.InfunderePacketHandler;
 import de.tobfal.infundere.init.ModBlockEntities;
+import de.tobfal.infundere.network.ClientboundOreInfuserResourcesPacket;
+import de.tobfal.infundere.recipe.OreInfuserRecipe;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -23,11 +29,15 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.wrapper.RecipeWrapper;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, ITickableBlockEntity {
 
@@ -46,7 +56,17 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
 
         @Override
         public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-            if (slot == 0 && (ForgeHooks.getBurnTime(stack, RecipeType.SMELTING) <= 0)) return stack;
+            if (slot == 0) {
+                SimpleContainer inventory = new SimpleContainer(this.getSlots());
+                inventory.setItem(0, stack);
+                assert level != null;
+                if (level.getRecipeManager().getRecipeFor(OreInfuserRecipe.Type.INSTANCE, inventory, level).isEmpty()) {
+                    return stack;
+                };
+            }
+            else if (slot == 1 && (ForgeHooks.getBurnTime(stack, RecipeType.SMELTING) <= 0)) {
+                return stack;
+            }
             return super.insertItem(slot, stack, simulate);
         }
     };
@@ -54,6 +74,7 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
     protected final ContainerData data;
     public int processTime = 0;
     public int maxProcessTime = Config.ORE_INFUSER_PROCESS_TIME.get();
+    public Block blockAbove;
 
     public OreInfuserBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.ORE_INFUSER.get(), pPos, pBlockState);
@@ -78,7 +99,7 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
 
             @Override
             public int getCount() {
-                return 4;
+                return 2;
             }
         };
     }
@@ -129,26 +150,81 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
 
     @Override
     public void tick() {
-        if (level == null || level.isClientSide()) {
+        if (this.level == null || this.level.isClientSide()) {
             return;
+        }
+
+        BlockPos posAbove = this.getBlockPos().above();
+        Block blockAbove = level.getBlockState(posAbove).getBlock();
+
+        ResourceLocation resourceLocation = null;
+        if (!isBlockIngredientOrOutput(blockAbove, this.level)) {
+            this.blockAbove = null;
+        } else {
+            this.blockAbove = blockAbove;
+            resourceLocation = ForgeRegistries.BLOCKS.getKey(blockAbove);
+            if (resourceLocation != null) {
+                resourceLocation = resourceLocation.withPrefix("textures/block/").withSuffix(".png");
+            }
+        }
+
+        InfunderePacketHandler.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> this.level.getChunkAt(this.worldPosition)),
+                new ClientboundOreInfuserResourcesPacket(resourceLocation));
+
+        OreInfuserRecipe recipe = getRecipe();
+        if (recipe == null) {
+            resetProcess();
+            return;
+        }
+
+        this.processTime++;
+        if (this.processTime < this.maxProcessTime) {
+            return;
+        }
+
+        resetProcess();
+
+        BlockState blockState = recipe.getOutputBlock().defaultBlockState();
+
+        this.itemHandler.extractItem(0, 1, false);
+
+        level.removeBlock(posAbove, true);
+        level.setBlock(posAbove, blockState, 1);
+    }
+
+    private OreInfuserRecipe getRecipe() {
+        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
+        for (int i = 0; i < itemHandler.getSlots(); i++) {
+            inventory.setItem(i, itemHandler.getStackInSlot(i));
+        }
+
+        assert level != null;
+        Optional<OreInfuserRecipe> match = level.getRecipeManager().getRecipeFor(OreInfuserRecipe.Type.INSTANCE, inventory, level);
+        if (match.isEmpty()) {
+            return null;
+        }
+
+        Block ingredientBlock = match.get().getIngredientBlock();
+        if (ingredientBlock == null) {
+            return null;
         }
 
         BlockPos posAbove = getBlockPos().above();
         Block blockAbove = level.getBlockState(posAbove).getBlock();
+        if (blockAbove != ingredientBlock) {
+            return null;
+        };
 
-        if (!infusibleBlocks.contains(blockAbove)) {
-            return;
-        }
+        return match.get();
+    }
 
-        processTime++;
-        if (processTime < maxProcessTime) {
-            return;
-        }
+    private void resetProcess() {
+        this.processTime = 0;
+    }
 
-        processTime = 0;
-
-        // TODO: Replace placeholder test behavior
-        level.removeBlock(posAbove, true);
-        level.setBlock(posAbove, Blocks.COAL_ORE.defaultBlockState(), 1);
+    private static boolean isBlockIngredientOrOutput(Block block, Level level) {
+        return level.getRecipeManager().getRecipes().stream()
+                .filter(recipe -> recipe.getType() == OreInfuserRecipe.Type.INSTANCE).map(OreInfuserRecipe.class::cast)
+                .anyMatch(recipe -> recipe.hasBlockIngredient(block, level) || recipe.hasBlockOutput(block, level));
     }
 }

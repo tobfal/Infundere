@@ -6,6 +6,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -20,7 +21,7 @@ public class OreInfuserMenu extends AbstractContainerMenu {
     private final ContainerData data;
 
     public OreInfuserMenu(int pContainerId, Inventory inv, FriendlyByteBuf extraData) {
-        this(pContainerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(4));
+        this(pContainerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(2));
     }
 
     public OreInfuserMenu(int pContainerId, Inventory inv, BlockEntity entity, ContainerData data) {
@@ -45,9 +46,8 @@ public class OreInfuserMenu extends AbstractContainerMenu {
         // Create container slots
         if (blockEntity != null) {
             blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(h -> {
-                addSlot(new SlotItemHandler(h, 0, 98, 35));
-
-                addSlot(new SlotItemHandler(h, 1, 26, 35));
+                addSlot(new SlotItemHandler(h, 0, 80, 60));
+                addSlot(new SlotItemHandler(h, 1, 152, 34));
             });
         }
 

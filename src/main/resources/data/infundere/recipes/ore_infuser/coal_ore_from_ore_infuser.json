@@ -1,0 +1,12 @@
+{
+    "type": "infundere:ore_infuser",
+    "containerIngredient": {
+        "item": "minecraft:raw_iron"
+    },
+    "blockItemIngredient": {
+        "item": "minecraft:stone"
+    },
+    "output": {
+        "item": "minecraft:iron_ore"
+    }
+}

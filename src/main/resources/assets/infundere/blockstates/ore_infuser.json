@@ -1,7 +1,7 @@
 {
-  "variants": {
-    "": {
-      "model": "infundere:block/ore_infuser"
+    "variants": {
+        "": {
+            "model": "infundere:block/ore_infuser"
+        }
     }
-  }
 }

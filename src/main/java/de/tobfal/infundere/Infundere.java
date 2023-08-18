@@ -1,7 +1,7 @@
 package de.tobfal.infundere;
 
 import de.tobfal.infundere.init.*;
-import de.tobfal.infundere.screen.OreInfuserScreen;
+import de.tobfal.infundere.client.screen.OreInfuserScreen;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -27,6 +27,7 @@ public class Infundere {
         ModCreativeTabs.register(eventBus);
         ModBlockEntities.register(eventBus);
         ModMenuTypes.register(eventBus);
+        ModRecipes.register(eventBus);
 
         eventBus.addListener(this::setup);
         eventBus.addListener(this::clientSetup);
@@ -41,5 +42,6 @@ public class Infundere {
 
     private void setup(final FMLCommonSetupEvent event) {
         LOGGER.info("PreInit");
+        event.enqueueWork(InfunderePacketHandler::init);
     }
 }
