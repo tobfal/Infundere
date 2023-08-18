@@ -1,5 +1,6 @@
 package de.tobfal.infundere.block.entity;
 
+import de.tobfal.infundere.block.menu.OreInfuserMenu;
 import de.tobfal.infundere.init.Config;
 import de.tobfal.infundere.init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
@@ -9,7 +10,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -24,7 +24,6 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -90,13 +89,6 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
         return Component.literal("Ore Infuser");
     }
 
-    @Nullable
-    @Override
-    public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-        // TODO: Create Menu
-        return null;
-    }
-
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @javax.annotation.Nullable Direction side) {
@@ -108,7 +100,7 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
     }
 
     @Override
-    public void invalidateCaps()  {
+    public void invalidateCaps() {
         super.invalidateCaps();
         lazyItemHandler.invalidate();
     }
@@ -131,9 +123,13 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
         lazyItemHandler = LazyOptional.of(() -> itemHandler);
     }
 
+    public OreInfuserMenu createMenu(int pContainerId, @NotNull Inventory pInventory, @NotNull Player pPlayer) {
+        return new OreInfuserMenu(pContainerId, pInventory, this, this.data);
+    }
+
     @Override
     public void tick() {
-        if (level == null || level.isClientSide()){
+        if (level == null || level.isClientSide()) {
             return;
         }
 
@@ -145,7 +141,7 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
         }
 
         processTime++;
-        if (processTime < maxProcessTime){
+        if (processTime < maxProcessTime) {
             return;
         }
 

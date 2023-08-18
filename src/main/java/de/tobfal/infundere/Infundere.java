@@ -1,6 +1,8 @@
 package de.tobfal.infundere;
 
 import de.tobfal.infundere.init.*;
+import de.tobfal.infundere.screen.OreInfuserScreen;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -15,6 +17,7 @@ public class Infundere {
     public static final Logger LOGGER = LoggerFactory.getLogger(Infundere.class + "/INFUNDERE");
 
     public Infundere() {
+
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         Config.init();
@@ -32,6 +35,8 @@ public class Infundere {
     }
 
     private void clientSetup(final FMLCommonSetupEvent event) {
+
+        MenuScreens.register(ModMenuTypes.ORE_INFUSER_MENU.get(), OreInfuserScreen::new);
     }
 
     private void setup(final FMLCommonSetupEvent event) {

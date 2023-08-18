@@ -2,11 +2,8 @@ package de.tobfal.infundere.init;
 
 import de.tobfal.infundere.Infundere;
 import de.tobfal.infundere.recipe.OreInfuserRecipe;
-import net.minecraft.world.Container;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.level.block.Block;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;

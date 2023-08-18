@@ -9,15 +9,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Arrays;
 
 public class OreInfuserRecipe implements Recipe<Container> {
 
@@ -36,7 +32,7 @@ public class OreInfuserRecipe implements Recipe<Container> {
 
     @Override
     public boolean matches(Container pContainer, Level pLevel) {
-        if (!pLevel.isClientSide()){
+        if (!pLevel.isClientSide()) {
             return false;
         }
 
@@ -64,10 +60,10 @@ public class OreInfuserRecipe implements Recipe<Container> {
             return null;
         }
 
-        return ((BlockItem)output.getItem()).getBlock();
+        return ((BlockItem) output.getItem()).getBlock();
     }
 
-    public int getProcessTime(){
+    public int getProcessTime() {
         return processTime;
     }
 
@@ -89,10 +85,13 @@ public class OreInfuserRecipe implements Recipe<Container> {
     public static final class Type implements RecipeType<OreInfuserRecipe> {
         public static final Type INSTANCE = new Type();
 
-        private Type() {};
+        private Type() {
+        }
+
+        ;
 
         @Override
-        public String toString()  {
+        public String toString() {
             return OreInfuserRecipe.ID;
         }
     }
@@ -101,7 +100,10 @@ public class OreInfuserRecipe implements Recipe<Container> {
         public static final Serializer INSTANCE = new Serializer();
         public static final ResourceLocation ID = new ResourceLocation(Infundere.MODID, OreInfuserRecipe.ID);
 
-        private Serializer() {};
+        private Serializer() {
+        }
+
+        ;
 
         @Override
         public OreInfuserRecipe fromJson(ResourceLocation pRecipeId, JsonObject pSerializedRecipe) {
@@ -118,7 +120,7 @@ public class OreInfuserRecipe implements Recipe<Container> {
         }
 
         @Override
-        public OreInfuserRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer)  {
+        public OreInfuserRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
             ItemStack output = pBuffer.readItem();
             Ingredient input = Ingredient.fromNetwork(pBuffer);
             int processTime = pBuffer.readInt();
