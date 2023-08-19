@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "infundere:item/lapis_lazuli_infusion_powder"
+  }
+}

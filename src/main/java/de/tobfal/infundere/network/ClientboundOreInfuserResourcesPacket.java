@@ -13,24 +13,27 @@ import java.util.function.Supplier;
 
 public class ClientboundOreInfuserResourcesPacket {
     public @Nullable ResourceLocation processBackgroundResourceLocation;
+    public @Nullable ResourceLocation processResourceLocation;
 
-    public ClientboundOreInfuserResourcesPacket(@Nullable ResourceLocation processBackgroundResourceLocation) {
+    public ClientboundOreInfuserResourcesPacket(@Nullable ResourceLocation processBackgroundResourceLocation, @Nullable ResourceLocation processResourceLocation) {
         this.processBackgroundResourceLocation = processBackgroundResourceLocation;
+        this.processResourceLocation = processResourceLocation;
+    }
+
+    public ClientboundOreInfuserResourcesPacket(FriendlyByteBuf buffer) {
+        this(buffer.readNullable(FriendlyByteBuf::readResourceLocation), buffer.readNullable(FriendlyByteBuf::readResourceLocation));
     }
 
     public void encode(FriendlyByteBuf buffer) {
         buffer.writeNullable(this.processBackgroundResourceLocation, FriendlyByteBuf::writeResourceLocation);
-    }
-
-    public ClientboundOreInfuserResourcesPacket(FriendlyByteBuf buffer) {
-        this(buffer.readNullable(FriendlyByteBuf::readResourceLocation));
+        buffer.writeNullable(this.processResourceLocation, FriendlyByteBuf::writeResourceLocation);
     }
 
     public boolean handle(Supplier<NetworkEvent.Context> context) {
         final var success = new AtomicBoolean(false);
         context.get().enqueueWork(() -> {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-                success.set(ClientOreInfuserData.set(this.processBackgroundResourceLocation));
+                success.set(ClientOreInfuserData.set(this.processBackgroundResourceLocation, this.processResourceLocation));
             });
         });
         context.get().setPacketHandled(true);

@@ -111,11 +111,11 @@ public class OreInfuserRecipe implements Recipe<SimpleContainer> {
     }
 
     public static class Type implements RecipeType<OreInfuserRecipe> {
-        private Type() {
-        }
-
         public static final Type INSTANCE = new Type();
         public static final String ID = "ore_infuser";
+
+        private Type() {
+        }
     }
 
     public static class Serializer implements RecipeSerializer<OreInfuserRecipe> {

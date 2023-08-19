@@ -21,8 +21,8 @@ import org.jetbrains.annotations.NotNull;
 public class OreInfuserRecipeCategory implements IRecipeCategory<OreInfuserRecipe> {
     public static final ResourceLocation UID = new ResourceLocation(Infundere.MODID, "ore_infuser");
     public static final ResourceLocation TEXTURE = new ResourceLocation(Infundere.MODID, "textures/gui/ore_infuser_gui.png");
-    private final IGuiHelper guiHelper;
     protected final IDrawable oreInfuserBlock;
+    private final IGuiHelper guiHelper;
 
     public OreInfuserRecipeCategory(IGuiHelper guiHelper) {
         this.guiHelper = guiHelper;
@@ -62,7 +62,7 @@ public class OreInfuserRecipeCategory implements IRecipeCategory<OreInfuserRecip
 
     @Override
     public void draw(OreInfuserRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics stack, double mouseX, double mouseY) {
-        oreInfuserBlock.draw(stack,24, 12);
-        oreInfuserBlock.draw(stack,68, 12);
+        oreInfuserBlock.draw(stack, 24, 12);
+        oreInfuserBlock.draw(stack, 68, 12);
     }
 }

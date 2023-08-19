@@ -6,15 +6,22 @@ import javax.annotation.Nullable;
 
 public class ClientOreInfuserData {
 
-    private static ResourceLocation resourceLocation;
+    private static ResourceLocation processBackgroundResourceLocation;
+    private static ResourceLocation processResourceLocation;
 
-    public static boolean set(@Nullable ResourceLocation resourceLocation) {
-        ClientOreInfuserData.resourceLocation = resourceLocation;
+    public static boolean set(@Nullable ResourceLocation processBackgroundResourceLocation, @Nullable ResourceLocation processResourceLocation) {
+        ClientOreInfuserData.processBackgroundResourceLocation = processBackgroundResourceLocation;
+        ClientOreInfuserData.processResourceLocation = processResourceLocation;
         return true;
     }
 
     @Nullable
-    public static ResourceLocation getResourceLocation() {
-        return resourceLocation;
+    public static ResourceLocation getProcessBackgroundResourceLocation() {
+        return processBackgroundResourceLocation;
+    }
+
+    @Nullable
+    public static ResourceLocation getProcessResourceLocation() {
+        return processResourceLocation;
     }
 }

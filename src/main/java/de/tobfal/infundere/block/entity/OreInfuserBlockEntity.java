@@ -29,25 +29,17 @@ import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.items.wrapper.RecipeWrapper;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, ITickableBlockEntity {
 
-    List<Block> infusibleBlocks = Arrays.asList(
-            Blocks.STONE,
-            Blocks.DEEPSLATE,
-            Blocks.NETHERRACK
-    );
-
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     public final ItemStackHandler itemHandler = new ItemStackHandler(2) {
         @Override
         protected void onContentsChanged(int slot) {
@@ -62,19 +54,24 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
                 assert level != null;
                 if (level.getRecipeManager().getRecipeFor(OreInfuserRecipe.Type.INSTANCE, inventory, level).isEmpty()) {
                     return stack;
-                };
-            }
-            else if (slot == 1 && (ForgeHooks.getBurnTime(stack, RecipeType.SMELTING) <= 0)) {
+                }
+                ;
+            } else if (slot == 1 && (ForgeHooks.getBurnTime(stack, RecipeType.SMELTING) <= 0)) {
                 return stack;
             }
             return super.insertItem(slot, stack, simulate);
         }
     };
-
     protected final ContainerData data;
     public int processTime = 0;
     public int maxProcessTime = Config.ORE_INFUSER_PROCESS_TIME.get();
     public Block blockAbove;
+    List<Block> infusibleBlocks = Arrays.asList(
+            Blocks.STONE,
+            Blocks.DEEPSLATE,
+            Blocks.NETHERRACK
+    );
+    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
     public OreInfuserBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.ORE_INFUSER.get(), pPos, pBlockState);
@@ -102,6 +99,19 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
                 return 2;
             }
         };
+    }
+
+    @Nullable
+    private static OreInfuserRecipe getRecipeFor(SimpleContainer simpleContainer, Block ingredientBlock, Level level) {
+        return level.getRecipeManager().getRecipes().stream()
+                .filter(recipe -> recipe.getType() == OreInfuserRecipe.Type.INSTANCE).map(OreInfuserRecipe.class::cast)
+                .filter(recipe -> recipe.matches(simpleContainer, level) && recipe.hasBlockIngredient(ingredientBlock, level)).findFirst().orElse(null);
+    }
+
+    private static boolean isBlockIngredientOrOutput(Block block, Level level) {
+        return level.getRecipeManager().getRecipes().stream()
+                .filter(recipe -> recipe.getType() == OreInfuserRecipe.Type.INSTANCE).map(OreInfuserRecipe.class::cast)
+                .anyMatch(recipe -> recipe.hasBlockIngredient(block, level) || recipe.hasBlockOutput(block, level));
     }
 
     @NotNull
@@ -157,27 +167,34 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
         BlockPos posAbove = this.getBlockPos().above();
         Block blockAbove = level.getBlockState(posAbove).getBlock();
 
-        ResourceLocation resourceLocation = null;
+        ResourceLocation processBackgroundResourceLocation = null;
         if (!isBlockIngredientOrOutput(blockAbove, this.level)) {
             this.blockAbove = null;
         } else {
             this.blockAbove = blockAbove;
-            resourceLocation = ForgeRegistries.BLOCKS.getKey(blockAbove);
-            if (resourceLocation != null) {
-                resourceLocation = resourceLocation.withPrefix("textures/block/").withSuffix(".png");
+            processBackgroundResourceLocation = ForgeRegistries.BLOCKS.getKey(blockAbove);
+            if (processBackgroundResourceLocation != null) {
+                processBackgroundResourceLocation = processBackgroundResourceLocation.withPrefix("textures/block/").withSuffix(".png");
             }
         }
 
-        InfunderePacketHandler.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> this.level.getChunkAt(this.worldPosition)),
-                new ClientboundOreInfuserResourcesPacket(resourceLocation));
-
-        OreInfuserRecipe recipe = getRecipe();
+        OreInfuserRecipe recipe = getRecipe(blockAbove);
         if (recipe == null) {
             resetProcess();
+            InfunderePacketHandler.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> this.level.getChunkAt(this.worldPosition)),
+                    new ClientboundOreInfuserResourcesPacket(processBackgroundResourceLocation, null));
             return;
         }
 
         this.processTime++;
+
+        ResourceLocation processResourceLocation = ForgeRegistries.BLOCKS.getKey(recipe.getOutputBlock());
+        if (processResourceLocation != null) {
+            processResourceLocation = processResourceLocation.withPrefix("textures/block/").withSuffix(".png");
+        }
+
+        InfunderePacketHandler.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> this.level.getChunkAt(this.worldPosition)),
+                new ClientboundOreInfuserResourcesPacket(processBackgroundResourceLocation, processResourceLocation));
         if (this.processTime < this.maxProcessTime) {
             return;
         }
@@ -192,39 +209,17 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
         level.setBlock(posAbove, blockState, 1);
     }
 
-    private OreInfuserRecipe getRecipe() {
+    private OreInfuserRecipe getRecipe(Block blockAbove) {
         SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
         for (int i = 0; i < itemHandler.getSlots(); i++) {
             inventory.setItem(i, itemHandler.getStackInSlot(i));
         }
 
         assert level != null;
-        Optional<OreInfuserRecipe> match = level.getRecipeManager().getRecipeFor(OreInfuserRecipe.Type.INSTANCE, inventory, level);
-        if (match.isEmpty()) {
-            return null;
-        }
-
-        Block ingredientBlock = match.get().getIngredientBlock();
-        if (ingredientBlock == null) {
-            return null;
-        }
-
-        BlockPos posAbove = getBlockPos().above();
-        Block blockAbove = level.getBlockState(posAbove).getBlock();
-        if (blockAbove != ingredientBlock) {
-            return null;
-        };
-
-        return match.get();
+        return getRecipeFor(inventory, blockAbove, level);
     }
 
     private void resetProcess() {
         this.processTime = 0;
-    }
-
-    private static boolean isBlockIngredientOrOutput(Block block, Level level) {
-        return level.getRecipeManager().getRecipes().stream()
-                .filter(recipe -> recipe.getType() == OreInfuserRecipe.Type.INSTANCE).map(OreInfuserRecipe.class::cast)
-                .anyMatch(recipe -> recipe.hasBlockIngredient(block, level) || recipe.hasBlockOutput(block, level));
     }
 }

@@ -18,9 +18,8 @@ import java.util.List;
 @JeiPlugin
 public class InfundereJEIPlugin implements IModPlugin {
 
-    private static final ResourceLocation PLUGIN_ID = new ResourceLocation(Infundere.MODID, "jei_plugin");
-
     public static final RecipeType<OreInfuserRecipe> ORE_INFUSER_TYPE = new RecipeType<>(OreInfuserRecipeCategory.UID, OreInfuserRecipe.class);
+    private static final ResourceLocation PLUGIN_ID = new ResourceLocation(Infundere.MODID, "jei_plugin");
 
     @NotNull
     @Override

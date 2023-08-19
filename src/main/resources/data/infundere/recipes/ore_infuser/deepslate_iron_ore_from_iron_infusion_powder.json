@@ -1,0 +1,12 @@
+{
+  "type": "infundere:ore_infuser",
+  "containerIngredient": {
+    "item": "infundere:iron_infusion_powder"
+  },
+  "blockItemIngredient": {
+    "item": "minecraft:deepslate"
+  },
+  "output": {
+    "item": "minecraft:deepslate_iron_ore"
+  }
+}
