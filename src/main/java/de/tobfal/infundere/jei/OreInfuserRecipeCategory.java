@@ -57,7 +57,7 @@ public class OreInfuserRecipeCategory implements IRecipeCategory<OreInfuserRecip
     public void setRecipe(IRecipeLayoutBuilder builder, OreInfuserRecipe recipe, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 82, 32).addIngredients(recipe.getContainerIngredient());
         builder.addSlot(RecipeIngredientRole.INPUT, 24, 0).addItemStack(recipe.getBlockItemIngredient());
-        builder.addSlot(RecipeIngredientRole.OUTPUT, 68, 0).addItemStack(recipe.output);
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 68, 0).addItemStack(recipe.result);
     }
 
     @Override

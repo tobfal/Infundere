@@ -105,13 +105,13 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
     private static OreInfuserRecipe getRecipeFor(SimpleContainer simpleContainer, Block ingredientBlock, Level level) {
         return level.getRecipeManager().getRecipes().stream()
                 .filter(recipe -> recipe.getType() == OreInfuserRecipe.Type.INSTANCE).map(OreInfuserRecipe.class::cast)
-                .filter(recipe -> recipe.matches(simpleContainer, level) && recipe.hasBlockIngredient(ingredientBlock, level)).findFirst().orElse(null);
+                .filter(recipe -> recipe.matches(simpleContainer, level) && recipe.hasBlockAsIngredient(ingredientBlock, level)).findFirst().orElse(null);
     }
 
     private static boolean isBlockIngredientOrOutput(Block block, Level level) {
         return level.getRecipeManager().getRecipes().stream()
                 .filter(recipe -> recipe.getType() == OreInfuserRecipe.Type.INSTANCE).map(OreInfuserRecipe.class::cast)
-                .anyMatch(recipe -> recipe.hasBlockIngredient(block, level) || recipe.hasBlockOutput(block, level));
+                .anyMatch(recipe -> recipe.hasBlockAsIngredient(block, level) || recipe.hasBlockAsResult(block, level));
     }
 
     @NotNull
@@ -188,7 +188,7 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
 
         this.processTime++;
 
-        ResourceLocation processResourceLocation = ForgeRegistries.BLOCKS.getKey(recipe.getOutputBlock());
+        ResourceLocation processResourceLocation = ForgeRegistries.BLOCKS.getKey(recipe.getResultBlock());
         if (processResourceLocation != null) {
             processResourceLocation = processResourceLocation.withPrefix("textures/block/").withSuffix(".png");
         }
@@ -201,7 +201,7 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
 
         resetProcess();
 
-        BlockState blockState = recipe.getOutputBlock().defaultBlockState();
+        BlockState blockState = recipe.getResultBlock().defaultBlockState();
 
         this.itemHandler.extractItem(0, 1, false);
 

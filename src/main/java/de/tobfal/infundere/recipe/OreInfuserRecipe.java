@@ -19,16 +19,17 @@ import org.jetbrains.annotations.Nullable;
 public class OreInfuserRecipe implements Recipe<SimpleContainer> {
 
     public final ResourceLocation id;
-    public final ItemStack output;
+    public final ItemStack result;
     private final Ingredient containerIngredient;
+    private final ItemStack blockIngredientItem;
+    private final int processTime;
 
-    private final ItemStack blockItemIngredient;
-
-    public OreInfuserRecipe(ResourceLocation id, ItemStack output, Ingredient containerIngredient, ItemStack blockItemIngredient) {
+    public OreInfuserRecipe(ResourceLocation id, ItemStack result, Ingredient containerIngredient, ItemStack blockIngredientItem, int processTime) {
         this.id = id;
-        this.output = output;
+        this.result = result;
         this.containerIngredient = containerIngredient;
-        this.blockItemIngredient = blockItemIngredient;
+        this.blockIngredientItem = blockIngredientItem;
+        this.processTime = processTime;
     }
 
     @Override
@@ -40,7 +41,7 @@ public class OreInfuserRecipe implements Recipe<SimpleContainer> {
         return this.containerIngredient.test(pContainer.getItem(0));
     }
 
-    public boolean hasBlockIngredient(Block block, Level pLevel) {
+    public boolean hasBlockAsIngredient(Block block, Level pLevel) {
         if (pLevel.isClientSide()) {
             return false;
         }
@@ -48,17 +49,18 @@ public class OreInfuserRecipe implements Recipe<SimpleContainer> {
         return block == getIngredientBlock();
     }
 
-    public boolean hasBlockOutput(Block block, Level pLevel) {
+    public boolean hasBlockAsResult(Block block, Level pLevel) {
         if (pLevel.isClientSide()) {
             return false;
         }
 
-        return block == getOutputBlock();
+        return block == getResultBlock();
     }
 
+    @NotNull
     @Override
-    public ItemStack assemble(SimpleContainer pContainer, RegistryAccess pRegistryAccess) {
-        return output;
+    public ItemStack assemble(@NotNull SimpleContainer pContainer, @NotNull RegistryAccess pRegistryAccess) {
+        return result;
     }
 
     @Override
@@ -66,21 +68,29 @@ public class OreInfuserRecipe implements Recipe<SimpleContainer> {
         return true;
     }
 
+    @NotNull
     @Override
-    public ItemStack getResultItem(RegistryAccess pRegistryAccess) {
-        return output.copy();
+    public ItemStack getResultItem(@NotNull RegistryAccess pRegistryAccess) {
+        return result.copy();
     }
 
+    public int getProcessTime() {
+        return processTime;
+    }
+
+    @NotNull
     @Override
     public ResourceLocation getId() {
         return id;
     }
 
+    @NotNull
     @Override
     public RecipeSerializer<?> getSerializer() {
         return ModRecipes.ORE_INFUSER_SERIALIZER.get();
     }
 
+    @NotNull
     @Override
     public RecipeType<?> getType() {
         return ModRecipes.ORE_INFUSER_TYPE.get();
@@ -91,23 +101,23 @@ public class OreInfuserRecipe implements Recipe<SimpleContainer> {
     }
 
     public ItemStack getBlockItemIngredient() {
-        return this.blockItemIngredient;
+        return this.blockIngredientItem;
     }
 
     public Block getIngredientBlock() {
-        if (!(this.blockItemIngredient.getItem() instanceof BlockItem)) {
+        if (!(this.blockIngredientItem.getItem() instanceof BlockItem)) {
             return null;
         }
 
-        return ((BlockItem) this.blockItemIngredient.getItem()).getBlock();
+        return ((BlockItem) this.blockIngredientItem.getItem()).getBlock();
     }
 
-    public Block getOutputBlock() {
-        if (!(this.output.getItem() instanceof BlockItem)) {
+    public Block getResultBlock() {
+        if (!(this.result.getItem() instanceof BlockItem)) {
             return null;
         }
 
-        return ((BlockItem) this.output.getItem()).getBlock();
+        return ((BlockItem) this.result.getItem()).getBlock();
     }
 
     public static class Type implements RecipeType<OreInfuserRecipe> {
@@ -122,37 +132,41 @@ public class OreInfuserRecipe implements Recipe<SimpleContainer> {
         public static final Serializer INSTANCE = new Serializer();
         public static final ResourceLocation ID = new ResourceLocation(Infundere.MODID, "ore_infuser");
 
+        @NotNull
         @Override
-        public OreInfuserRecipe fromJson(ResourceLocation pRecipeId, JsonObject pSerializedRecipe) {
-            ItemStack output = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "output"));
-            Ingredient containerIngredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "containerIngredient"));
-            ItemStack blockItemIngredient = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "blockItemIngredient"));
+        public OreInfuserRecipe fromJson(@NotNull ResourceLocation pRecipeId, @NotNull JsonObject pSerializedRecipe) {
+            ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "result"));
+            Ingredient itemIngredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "itemIngredient"));
+            ItemStack blockIngredientItem = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "blockIngredientItem"));
+            int processTime = GsonHelper.getAsInt(pSerializedRecipe, "processTime");
 
-            if (!(output.getItem() instanceof BlockItem)) {
-                output = ItemStack.EMPTY;
+            if (!(result.getItem() instanceof BlockItem)) {
+                result = ItemStack.EMPTY;
             }
 
-            if (!(blockItemIngredient.getItem() instanceof BlockItem)) {
-                blockItemIngredient = ItemStack.EMPTY;
+            if (!(blockIngredientItem.getItem() instanceof BlockItem)) {
+                blockIngredientItem = ItemStack.EMPTY;
             }
 
-            return new OreInfuserRecipe(pRecipeId, output, containerIngredient, blockItemIngredient);
+            return new OreInfuserRecipe(pRecipeId, result, itemIngredient, blockIngredientItem, processTime);
         }
 
         @Override
-        public @Nullable OreInfuserRecipe fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
-            ItemStack output = pBuffer.readItem();
-            Ingredient containerIngredient = Ingredient.fromNetwork(pBuffer);
+        public @Nullable OreInfuserRecipe fromNetwork(@NotNull ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
+            ItemStack result = pBuffer.readItem();
+            Ingredient itemIngredient = Ingredient.fromNetwork(pBuffer);
             ItemStack blockItemIngredient = pBuffer.readItem();
+            int processTime = pBuffer.readInt();
 
-            return new OreInfuserRecipe(pRecipeId, output, containerIngredient, blockItemIngredient);
+            return new OreInfuserRecipe(pRecipeId, result, itemIngredient, blockItemIngredient, processTime);
         }
 
         @Override
         public void toNetwork(FriendlyByteBuf pBuffer, OreInfuserRecipe pRecipe) {
-            pBuffer.writeItem(pRecipe.output);
+            pBuffer.writeItem(pRecipe.result);
             pRecipe.getContainerIngredient().toNetwork(pBuffer);
-            pBuffer.writeItem(pRecipe.blockItemIngredient);
+            pBuffer.writeItem(pRecipe.blockIngredientItem);
+            pBuffer.writeInt(pRecipe.processTime);
         }
     }
 }
