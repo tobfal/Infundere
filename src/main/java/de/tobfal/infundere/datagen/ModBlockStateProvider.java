@@ -15,7 +15,6 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        blockWithItem(ModBlocks.ORE_INFUSER);
     }
 
     private void blockWithItem(RegistryObject<Block> blockRegistryObject) {

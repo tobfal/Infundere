@@ -8,9 +8,14 @@ import de.tobfal.infundere.network.ClientboundOreInfuserResourcesPacket;
 import de.tobfal.infundere.recipe.OreInfuserRecipe;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -37,6 +42,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 
 public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, ITickableBlockEntity {
 
@@ -66,11 +73,8 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
     public int processTime = 0;
     public int maxProcessTime = Config.ORE_INFUSER_PROCESS_TIME.get();
     public Block blockAbove;
-    List<Block> infusibleBlocks = Arrays.asList(
-            Blocks.STONE,
-            Blocks.DEEPSLATE,
-            Blocks.NETHERRACK
-    );
+    public ResourceLocation processBackgroundResourceLocation;
+    public ResourceLocation processResourceLocation;
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
 
     public OreInfuserBlockEntity(BlockPos pPos, BlockState pBlockState) {
@@ -182,7 +186,7 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
         if (recipe == null) {
             resetProcess();
             InfunderePacketHandler.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> this.level.getChunkAt(this.worldPosition)),
-                    new ClientboundOreInfuserResourcesPacket(processBackgroundResourceLocation, null));
+                    new ClientboundOreInfuserResourcesPacket(this.getBlockPos(), processBackgroundResourceLocation, null));
             return;
         }
 
@@ -194,7 +198,7 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
         }
 
         InfunderePacketHandler.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> this.level.getChunkAt(this.worldPosition)),
-                new ClientboundOreInfuserResourcesPacket(processBackgroundResourceLocation, processResourceLocation));
+                new ClientboundOreInfuserResourcesPacket(this.getBlockPos(), processBackgroundResourceLocation, processResourceLocation));
         if (this.processTime < this.maxProcessTime) {
             return;
         }
@@ -207,6 +211,12 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
 
         level.removeBlock(posAbove, true);
         level.setBlock(posAbove, blockState, 1);
+
+        int particleAmount = 100;
+        Random random = new Random();
+        this.level.playSound(null, posAbove, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 10.0f, 1.4f);
+        Objects.requireNonNull(Objects.requireNonNull(this.level.getServer()).getLevel(level.dimension()))
+                .sendParticles(ParticleTypes.PORTAL, posAbove.getX() + 0.5f, posAbove.getY() + 0.25f, posAbove.getZ() + 0.5f, 75, 0.0f, 0.0f, 0.0f, 0.3f);
     }
 
     private OreInfuserRecipe getRecipe(Block blockAbove) {

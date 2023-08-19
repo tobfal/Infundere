@@ -2,8 +2,8 @@ package de.tobfal.infundere.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.tobfal.infundere.Infundere;
+import de.tobfal.infundere.block.entity.OreInfuserBlockEntity;
 import de.tobfal.infundere.block.menu.OreInfuserMenu;
-import de.tobfal.infundere.client.data.ClientOreInfuserData;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -30,13 +30,15 @@ public class OreInfuserScreen extends AbstractContainerScreen<OreInfuserMenu> {
 
         pGuiGraphics.blit(TEXTURE, x, y, 0, 0, imageWidth, imageHeight);
 
-        ResourceLocation processBackgroundResourceLocation = ClientOreInfuserData.getProcessBackgroundResourceLocation();
+        OreInfuserBlockEntity blockEntity = menu.getBlockEntity();
+
+        ResourceLocation processBackgroundResourceLocation = blockEntity.processBackgroundResourceLocation;
         if (processBackgroundResourceLocation != null) {
             pGuiGraphics.blit(processBackgroundResourceLocation, x + 64, y + 6, 0, 0, 48, 48, 48, 48);
         }
 
         int progress = menu.getScaledProgress();
-        ResourceLocation processResourceLocation = ClientOreInfuserData.getProcessResourceLocation();
+        ResourceLocation processResourceLocation = blockEntity.processResourceLocation;
         if (processResourceLocation != null) {
             pGuiGraphics.blit(processResourceLocation, x + 64, y + 6 + 48 - progress, 0, 48 - progress, 48, progress, 48, 48);
         }

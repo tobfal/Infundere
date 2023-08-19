@@ -8,19 +8,21 @@ import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.CriterionTriggerInstance;
 import net.minecraft.advancements.RequirementsStrategy;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.recipes.*;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeBuilder;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.CookingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class OreInfuserRecipeBuilder implements RecipeBuilder {
@@ -31,9 +33,9 @@ public class OreInfuserRecipeBuilder implements RecipeBuilder {
     private final Item blockIngredientItem;
     private final int processTime;
     private final Advancement.Builder advancement = Advancement.Builder.recipeAdvancement();
+    private final RecipeSerializer<OreInfuserRecipe> serializer;
     @javax.annotation.Nullable
     private String group;
-    private final RecipeSerializer<OreInfuserRecipe> serializer;
 
     private OreInfuserRecipeBuilder(RecipeCategory pCategory, CookingBookCategory pBookCategory, ItemLike pResult, Ingredient pItemIngredient, Item pBlockIngredientItem, int pProcessTime, RecipeSerializer<OreInfuserRecipe> pSerializer) {
         this.category = pCategory;
@@ -116,11 +118,11 @@ public class OreInfuserRecipeBuilder implements RecipeBuilder {
             pJson.add("itemIngredient", this.itemIngredient.toJson());
 
             JsonObject blockIngredientItemObject = new JsonObject();
-            blockIngredientItemObject.addProperty("item", BuiltInRegistries.ITEM.getKey(this.blockIngredientItem).toString());
+            blockIngredientItemObject.addProperty("item", Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(this.blockIngredientItem)).toString());
             pJson.add("blockIngredientItem", blockIngredientItemObject);
 
             JsonObject resultObject = new JsonObject();
-            resultObject.addProperty("item", BuiltInRegistries.ITEM.getKey(this.result).toString());
+            resultObject.addProperty("item", Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(this.result)).toString());
             pJson.add("result", resultObject);
 
             pJson.addProperty("processTime", this.processTime);

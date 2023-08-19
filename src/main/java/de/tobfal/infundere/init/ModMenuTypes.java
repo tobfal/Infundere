@@ -20,9 +20,9 @@ public class ModMenuTypes {
 
     public static void register(IEventBus eventBus) {
         MENUS.register(eventBus);
-    }    public static final RegistryObject<MenuType<OreInfuserMenu>> ORE_INFUSER_MENU = registerMenuType(OreInfuserMenu::new, "ore_infuser_menu");
+    }
 
-
+    public static final RegistryObject<MenuType<OreInfuserMenu>> ORE_INFUSER_MENU = registerMenuType(OreInfuserMenu::new, "ore_infuser_menu");
 
 
 }
