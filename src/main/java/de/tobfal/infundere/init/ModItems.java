@@ -1,6 +1,8 @@
 package de.tobfal.infundere.init;
 
 import de.tobfal.infundere.Infundere;
+import de.tobfal.infundere.item.OreInfuserItem;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
@@ -9,6 +11,9 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Infundere.MODID);
+
+    public static final RegistryObject<BlockItem> ORE_INFUSER = ModCreativeTabs.addToTab(ITEMS.register("ore_infuser",
+            () -> new OreInfuserItem(ModBlocks.ORE_INFUSER.get(), new Item.Properties())));
 
     public static final RegistryObject<Item> COAL_INFUSION_POWDER = ModCreativeTabs.addToTab(ITEMS.register("coal_infusion_powder",
             () -> new Item(new Item.Properties())));

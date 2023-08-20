@@ -88,7 +88,7 @@ public class OreInfuserRecipeCategory implements IRecipeCategory<OreInfuserRecip
 
         // OreInfuserBlock
         poseStack.pushPose();
-        poseStack.translate(53.5, 43, 128 - 32);
+        poseStack.translate(53.5, 50, 128 - 32);
         poseStack.scale(16, -16, 16);
         poseStack.mulPose(quaternion);
         dispatcher.renderSingleBlock(ModBlocks.ORE_INFUSER.get().defaultBlockState(), poseStack, bufferSource,
@@ -97,8 +97,8 @@ public class OreInfuserRecipeCategory implements IRecipeCategory<OreInfuserRecip
 
         // IngredientBlock
         poseStack.pushPose();
-        poseStack.translate(53.5, 29.1, 128);
-        poseStack.scale(16,-16,-16);
+        poseStack.translate(53.5, 29.2, 128);
+        poseStack.scale(16,-16,16);
         poseStack.mulPose(quaternion);
         dispatcher.renderSingleBlock(recipe.getIngredientBlock().defaultBlockState(), poseStack, bufferSource,
                 LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, RenderType.solid());
@@ -106,17 +106,17 @@ public class OreInfuserRecipeCategory implements IRecipeCategory<OreInfuserRecip
 
         // OreInfuserBlock
         poseStack.pushPose();
-        poseStack.translate(98.5, 43, 128 - 32);
+        poseStack.translate(98.5, 50, 128 - 32);
         poseStack.scale(16, -16, 16);
         poseStack.mulPose(quaternion);
         dispatcher.renderSingleBlock(ModBlocks.ORE_INFUSER.get().defaultBlockState(), poseStack, bufferSource,
                 LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, RenderType.cutoutMipped());
         poseStack.popPose();
 
-        // IngredientBlock
+        // ResultBlock
         poseStack.pushPose();
-        poseStack.translate(98.5, 29.1, 128);
-        poseStack.scale(16,-16,-16);
+        poseStack.translate(98.5, 29.2, 128);
+        poseStack.scale(16,-16,16);
         poseStack.mulPose(quaternion);
         dispatcher.renderSingleBlock(recipe.getResultBlock().defaultBlockState(), poseStack, bufferSource,
                 LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, RenderType.solid());

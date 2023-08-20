@@ -57,7 +57,7 @@ public class Infundere {
     public static class ClientModeEvents {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
-            BlockEntityRenderers.register(ModBlockEntities.ORE_INFUSER.get(), OreInfuserBlockRenderer::new);
+            BlockEntityRenderers.register(ModBlockEntities.ORE_INFUSER.get(), pContext -> new OreInfuserBlockRenderer());
         }
     }
 }

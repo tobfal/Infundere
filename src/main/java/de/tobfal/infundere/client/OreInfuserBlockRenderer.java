@@ -6,7 +6,7 @@ import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoBlockRenderer;
 
 public class OreInfuserBlockRenderer extends GeoBlockRenderer<OreInfuserBlockEntity> {
-    public OreInfuserBlockRenderer(BlockEntityRendererProvider.Context context) {
+    public OreInfuserBlockRenderer() {
         super(new OreInfuserBlockModel());
     }
 }
