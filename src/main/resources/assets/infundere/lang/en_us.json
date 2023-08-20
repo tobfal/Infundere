@@ -1,5 +1,16 @@
 {
   "block.infundere.ore_infuser": "Ore Infuser",
+
   "creativetab.infundere.infunderetab": "Infundere",
+
+  "item.infundere.coal_infusion_powder": "Coal Infusion Powder",
+  "item.infundere.copper_infusion_powder": "Copper Infusion Powder",
+  "item.infundere.diamond_infusion_powder": "Diamond Infusion Powder",
+  "item.infundere.emerald_infusion_powder": "Emerald Infusion Powder",
+  "item.infundere.gold_infusion_powder": "Gold Infusion Powder",
+  "item.infundere.iron_infusion_powder": "Iron Infusion Powder",
+  "item.infundere.lapis_lazuli_infusion_powder": "Lapis Lazuli Infusion Powder",
+  "item.infundere.redstone_infusion_powder": "Redstone Infusion Powder",
+
   "tooltip.infundere.shift": "§e<SHIFT>§r"
 }

@@ -54,7 +54,7 @@ public class OreInfuserRecipeCategory implements IRecipeCategory<OreInfuserRecip
     @NotNull
     @Override
     public Component getTitle() {
-        return Component.literal("Ore Infuser");
+        return Component.translatable("block.infundere.ore_infuser");
     }
 
     @NotNull

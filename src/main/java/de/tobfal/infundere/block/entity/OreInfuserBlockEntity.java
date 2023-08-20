@@ -134,7 +134,7 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
     @NotNull
     @Override
     public Component getDisplayName() {
-        return Component.literal("Ore Infuser");
+        return Component.translatable("block.infundere.ore_infuser");
     }
 
     @Nonnull
