@@ -8,7 +8,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.SlotItemHandler;
@@ -26,7 +25,7 @@ public class OreInfuserMenu extends AbstractContainerMenu {
 
     public OreInfuserMenu(int pContainerId, Inventory inv, BlockEntity entity, ContainerData data) {
         super(ModMenuTypes.ORE_INFUSER_MENU.get(), pContainerId);
-        checkContainerSize(inv, 2);
+        checkContainerSize(inv, 1);
 
         blockEntity = (OreInfuserBlockEntity) entity;
         this.level = inv.player.level();
@@ -46,8 +45,7 @@ public class OreInfuserMenu extends AbstractContainerMenu {
         // Create container slots
         if (blockEntity != null) {
             blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(h -> {
-                addSlot(new SlotItemHandler(h, 0, 80, 60));
-                addSlot(new SlotItemHandler(h, 1, 152, 34));
+                addSlot(new SlotItemHandler(h, 0, 44, 34));
             });
         }
 
@@ -64,7 +62,7 @@ public class OreInfuserMenu extends AbstractContainerMenu {
 
     @NotNull
     @Override
-    public ItemStack quickMoveStack(Player pPlayer, int pIndex) {
+    public ItemStack quickMoveStack(@NotNull Player pPlayer, int pIndex) {
         Slot sourceSlot = slots.get(pIndex);
         if (!sourceSlot.hasItem()) return ItemStack.EMPTY;
         ItemStack sourceStack = sourceSlot.getItem();
@@ -74,7 +72,7 @@ public class OreInfuserMenu extends AbstractContainerMenu {
             if (!moveItemStackTo(sourceStack, 36, 37, false)) {
                 return ItemStack.EMPTY;
             }
-        } else if (pIndex < 38) {
+        } else if (pIndex < 37) {
             if (!moveItemStackTo(sourceStack, 0, 36, false)) {
                 return ItemStack.EMPTY;
             }

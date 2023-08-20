@@ -17,28 +17,31 @@ public class ClientboundOreInfuserResourcesPacket {
     public BlockPos blockPos;
     public @Nullable ResourceLocation processBackgroundResourceLocation;
     public @Nullable ResourceLocation processResourceLocation;
+    public boolean playAnimation;
 
-    public ClientboundOreInfuserResourcesPacket(BlockPos blockPos, @Nullable ResourceLocation processBackgroundResourceLocation, @Nullable ResourceLocation processResourceLocation) {
+    public ClientboundOreInfuserResourcesPacket(BlockPos blockPos, @Nullable ResourceLocation processBackgroundResourceLocation, @Nullable ResourceLocation processResourceLocation, boolean playAnimation) {
         this.blockPos = blockPos;
         this.processBackgroundResourceLocation = processBackgroundResourceLocation;
         this.processResourceLocation = processResourceLocation;
+        this.playAnimation = playAnimation;
     }
 
     public ClientboundOreInfuserResourcesPacket(FriendlyByteBuf buffer) {
-        this(buffer.readBlockPos(), buffer.readNullable(FriendlyByteBuf::readResourceLocation), buffer.readNullable(FriendlyByteBuf::readResourceLocation));
+        this(buffer.readBlockPos(), buffer.readNullable(FriendlyByteBuf::readResourceLocation), buffer.readNullable(FriendlyByteBuf::readResourceLocation), buffer.readBoolean());
     }
 
     public void encode(FriendlyByteBuf buffer) {
         buffer.writeBlockPos(this.blockPos);
         buffer.writeNullable(this.processBackgroundResourceLocation, FriendlyByteBuf::writeResourceLocation);
         buffer.writeNullable(this.processResourceLocation, FriendlyByteBuf::writeResourceLocation);
+        buffer.writeBoolean(this.playAnimation);
     }
 
     public boolean handle(Supplier<NetworkEvent.Context> context) {
         final var success = new AtomicBoolean(false);
         context.get().enqueueWork(() -> {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-                success.set(ClientAccess.updateOreInfuserResourceLocations(this.blockPos , this.processBackgroundResourceLocation, this.processResourceLocation));
+                success.set(ClientAccess.updateOreInfuserResourceLocations(this.blockPos , this.processBackgroundResourceLocation, this.processResourceLocation, this.playAnimation));
             });
         });
         context.get().setPacketHandled(true);

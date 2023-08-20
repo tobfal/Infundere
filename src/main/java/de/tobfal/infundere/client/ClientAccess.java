@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import javax.annotation.Nullable;
 
 public class ClientAccess {
-    public static boolean updateOreInfuserResourceLocations(BlockPos pos, @Nullable ResourceLocation processBackgroundResourceLocation, @Nullable ResourceLocation processResourceLocation){
+    public static boolean updateOreInfuserResourceLocations(BlockPos pos, @Nullable ResourceLocation processBackgroundResourceLocation, @Nullable ResourceLocation processResourceLocation, boolean playAnimation){
         Level level = Minecraft.getInstance().level;
         assert level != null;
         final BlockEntity blockEntity = level.getBlockEntity(pos);
@@ -20,6 +20,9 @@ public class ClientAccess {
 
         oreInfuserBlockEntity.processBackgroundResourceLocation = processBackgroundResourceLocation;
         oreInfuserBlockEntity.processResourceLocation = processResourceLocation;
+        if (playAnimation) {
+            oreInfuserBlockEntity.playAnimation = true;
+        }
         return true;
     }
 }

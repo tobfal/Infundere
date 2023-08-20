@@ -31,16 +31,20 @@ public class OreInfuserScreen extends AbstractContainerScreen<OreInfuserMenu> {
         pGuiGraphics.blit(TEXTURE, x, y, 0, 0, imageWidth, imageHeight);
 
         OreInfuserBlockEntity blockEntity = menu.getBlockEntity();
+        int processBarX = 91;
+        int processBarY = 18;
+        int processBarWidth = 48;
+        int processBarHeight = 48;
 
         ResourceLocation processBackgroundResourceLocation = blockEntity.processBackgroundResourceLocation;
         if (processBackgroundResourceLocation != null) {
-            pGuiGraphics.blit(processBackgroundResourceLocation, x + 64, y + 6, 0, 0, 48, 48, 48, 48);
+            pGuiGraphics.blit(processBackgroundResourceLocation, x + processBarX, y + processBarY, 0, 0, processBarWidth, processBarHeight, 48, 48);
         }
 
         int progress = menu.getScaledProgress();
         ResourceLocation processResourceLocation = blockEntity.processResourceLocation;
         if (processResourceLocation != null) {
-            pGuiGraphics.blit(processResourceLocation, x + 64, y + 6 + 48 - progress, 0, 48 - progress, 48, progress, 48, 48);
+            pGuiGraphics.blit(processResourceLocation, x + processBarX, y + processBarY + 48 - progress, 0, 48 - progress, processBarWidth, progress, processBarWidth, processBarHeight);
         }
     }
 

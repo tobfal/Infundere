@@ -1,0 +1,77 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.unknown",
+				"texture_width": 64,
+				"texture_height": 64,
+				"visible_bounds_width": 2,
+				"visible_bounds_height": 2.5,
+				"visible_bounds_offset": [0, 0.75, 0]
+			},
+			"bones": [
+				{
+					"name": "bb_main",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{"origin": [-8, -0.125, -8], "size": [16, 2, 16], "uv": [0, 0]}
+					]
+				},
+				{
+					"name": "plate",
+					"pivot": [-8, 2, 8],
+					"cubes": [
+						{"origin": [-4, 1.875, -4], "size": [8, 1, 8], "uv": [24, 29]},
+						{"origin": [-4, 1.775, -4], "size": [8, 1, 8], "pivot": [0, 1.875, 0], "rotation": [0, -45, 0], "uv": [0, 28]}
+					]
+				},
+				{
+					"name": "ring_inner",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{"origin": [-5, 14.625, 3], "size": [2, 1, 2], "uv": [35, 18]},
+						{"origin": [3, 14.625, 3], "size": [2, 1, 2], "uv": [24, 31]},
+						{"origin": [-5, 14.625, -5], "size": [2, 1, 2], "uv": [0, 31]},
+						{"origin": [3, 14.625, -5], "size": [2, 1, 2], "uv": [24, 28]},
+						{"origin": [1, 14.625, -5], "size": [2, 1, 1], "uv": [24, 34]},
+						{"origin": [-3, 14.625, -5], "size": [2, 1, 1], "uv": [0, 34]},
+						{"origin": [-3, 14.625, 4], "size": [2, 1, 1], "uv": [6, 14]},
+						{"origin": [4, 14.625, -3], "size": [1, 1, 2], "uv": [16, 37]},
+						{"origin": [4, 14.625, 1], "size": [1, 1, 2], "uv": [0, 37]},
+						{"origin": [-5, 14.625, 1], "size": [1, 1, 2], "uv": [36, 26]},
+						{"origin": [-5, 14.625, -3], "size": [1, 1, 2], "uv": [35, 23]},
+						{"origin": [1, 14.625, 4], "size": [2, 1, 1], "uv": [0, 14]}
+					]
+				},
+				{
+					"name": "ring",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{"origin": [-8, 13.875, 5], "size": [16, 2, 3], "uv": [0, 23]},
+						{"origin": [-8, 13.875, -8], "size": [16, 2, 3], "uv": [0, 18]},
+						{"origin": [-8, 13.875, -5], "size": [3, 2, 10], "uv": [26, 38]},
+						{"origin": [5, 13.875, -5], "size": [3, 2, 10], "uv": [0, 37]}
+					]
+				},
+				{
+					"name": "pillars",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{"origin": [6, 1.875, -8], "size": [2, 12, 2], "uv": [48, 18]},
+						{"origin": [-8, 1.875, 6], "size": [2, 12, 2], "uv": [48, 0]},
+						{"origin": [-8, 1.875, -8], "size": [2, 12, 2], "uv": [8, 0]},
+						{"origin": [6, 1.875, 6], "size": [2, 12, 2], "uv": [0, 0]}
+					]
+				},
+				{
+					"name": "piston_extender",
+					"pivot": [0, 1, 0],
+					"cubes": [
+						{"origin": [-1, 0.875, -1], "size": [2, 1, 2], "uv": [0, 28]}
+					]
+				}
+			]
+		}
+	]
+}

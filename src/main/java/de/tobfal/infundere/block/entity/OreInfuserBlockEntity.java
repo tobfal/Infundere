@@ -37,6 +37,14 @@ import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
+import software.bernie.example.block.entity.FertilizerBlockEntity;
+import software.bernie.geckolib.animatable.GeoBlockEntity;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animatable.instance.SingletonAnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.*;
+import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.util.RenderUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -45,9 +53,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, ITickableBlockEntity {
+public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, ITickableBlockEntity, GeoBlockEntity {
 
-    public final ItemStackHandler itemHandler = new ItemStackHandler(2) {
+    private static final RawAnimation PISTON_ANIMS = RawAnimation.begin().thenPlay("ore_infuser.piston");
+
+    public final ItemStackHandler itemHandler = new ItemStackHandler(1) {
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
@@ -63,19 +73,22 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
                     return stack;
                 }
                 ;
-            } else if (slot == 1 && (ForgeHooks.getBurnTime(stack, RecipeType.SMELTING) <= 0)) {
-                return stack;
             }
             return super.insertItem(slot, stack, simulate);
         }
     };
+
     protected final ContainerData data;
     public int processTime = 0;
     public int maxProcessTime = Config.ORE_INFUSER_PROCESS_TIME.get();
     public Block blockAbove;
     public ResourceLocation processBackgroundResourceLocation;
     public ResourceLocation processResourceLocation;
+    public OreInfuserRecipe currentRecipe;
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
+
+    private AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
+    public boolean playAnimation;
 
     public OreInfuserBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.ORE_INFUSER.get(), pPos, pBlockState);
@@ -184,13 +197,23 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
 
         OreInfuserRecipe recipe = getRecipe(blockAbove);
         if (recipe == null) {
+            this.currentRecipe = null;
             resetProcess();
             InfunderePacketHandler.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> this.level.getChunkAt(this.worldPosition)),
-                    new ClientboundOreInfuserResourcesPacket(this.getBlockPos(), processBackgroundResourceLocation, null));
+                    new ClientboundOreInfuserResourcesPacket(this.getBlockPos(), processBackgroundResourceLocation, null, false));
             return;
         }
 
+        if (recipe != this.currentRecipe) {
+            this.currentRecipe = recipe;
+            resetProcess();
+        }
+
+        this.maxProcessTime = recipe.getProcessTime();
         this.processTime++;
+
+        Objects.requireNonNull(Objects.requireNonNull(this.level.getServer()).getLevel(level.dimension()))
+                .sendParticles(ParticleTypes.PORTAL, posAbove.getX() + 0.5f, posAbove.getY() + 0.25f, posAbove.getZ() + 0.5f, 1, 0.0f, 0.0f, 0.0f, 0.3f);
 
         ResourceLocation processResourceLocation = ForgeRegistries.BLOCKS.getKey(recipe.getResultBlock());
         if (processResourceLocation != null) {
@@ -198,7 +221,7 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
         }
 
         InfunderePacketHandler.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> this.level.getChunkAt(this.worldPosition)),
-                new ClientboundOreInfuserResourcesPacket(this.getBlockPos(), processBackgroundResourceLocation, processResourceLocation));
+                new ClientboundOreInfuserResourcesPacket(this.getBlockPos(), processBackgroundResourceLocation, processResourceLocation, this.processTime >= this.maxProcessTime));
         if (this.processTime < this.maxProcessTime) {
             return;
         }
@@ -212,11 +235,7 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
         level.removeBlock(posAbove, true);
         level.setBlock(posAbove, blockState, 1);
 
-        int particleAmount = 100;
-        Random random = new Random();
         this.level.playSound(null, posAbove, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 10.0f, 1.4f);
-        Objects.requireNonNull(Objects.requireNonNull(this.level.getServer()).getLevel(level.dimension()))
-                .sendParticles(ParticleTypes.PORTAL, posAbove.getX() + 0.5f, posAbove.getY() + 0.25f, posAbove.getZ() + 0.5f, 75, 0.0f, 0.0f, 0.0f, 0.3f);
     }
 
     private OreInfuserRecipe getRecipe(Block blockAbove) {
@@ -231,5 +250,22 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
 
     private void resetProcess() {
         this.processTime = 0;
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
+        controllerRegistrar.add(new AnimationController<>(this, state -> {
+            if (state.getAnimatable().playAnimation) {
+                state.resetCurrentAnimation();
+                state.getAnimatable().playAnimation = false;
+                return state.setAndContinue(PISTON_ANIMS);
+            }
+            return PlayState.CONTINUE;
+        }));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
     }
 }
