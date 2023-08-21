@@ -41,7 +41,7 @@ public class ClientboundOreInfuserResourcesPacket {
         final var success = new AtomicBoolean(false);
         context.get().enqueueWork(() -> {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-                success.set(ClientAccess.updateOreInfuserResourceLocations(this.blockPos , this.processBackgroundResourceLocation, this.processResourceLocation, this.playAnimation));
+                success.set(ClientAccess.updateOreInfuserResourceLocations(this.blockPos, this.processBackgroundResourceLocation, this.processResourceLocation, this.playAnimation));
             });
         });
         context.get().setPacketHandled(true);

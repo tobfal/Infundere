@@ -19,19 +19,13 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.event.ScreenEvent;
-import net.minecraftforge.client.model.EmptyModel;
 import net.minecraftforge.client.model.data.ModelData;
-import net.minecraftforge.fml.earlydisplay.ElementShader;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
 public class OreInfuserRecipeCategory implements IRecipeCategory<OreInfuserRecipe> {
@@ -98,7 +92,7 @@ public class OreInfuserRecipeCategory implements IRecipeCategory<OreInfuserRecip
         // IngredientBlock
         poseStack.pushPose();
         poseStack.translate(53.5, 29.2, 128);
-        poseStack.scale(16,-16,16);
+        poseStack.scale(16, -16, 16);
         poseStack.mulPose(quaternion);
         dispatcher.renderSingleBlock(recipe.getIngredientBlock().defaultBlockState(), poseStack, bufferSource,
                 LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, RenderType.solid());
@@ -116,7 +110,7 @@ public class OreInfuserRecipeCategory implements IRecipeCategory<OreInfuserRecip
         // ResultBlock
         poseStack.pushPose();
         poseStack.translate(98.5, 29.2, 128);
-        poseStack.scale(16,-16,16);
+        poseStack.scale(16, -16, 16);
         poseStack.mulPose(quaternion);
         dispatcher.renderSingleBlock(recipe.getResultBlock().defaultBlockState(), poseStack, bufferSource,
                 LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, RenderType.solid());

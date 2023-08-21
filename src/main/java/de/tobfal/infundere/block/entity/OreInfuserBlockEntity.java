@@ -1,34 +1,29 @@
 package de.tobfal.infundere.block.entity;
 
 import de.tobfal.infundere.block.menu.OreInfuserMenu;
-import de.tobfal.infundere.init.Config;
 import de.tobfal.infundere.init.InfunderePacketHandler;
 import de.tobfal.infundere.init.ModBlockEntities;
 import de.tobfal.infundere.network.ClientboundOreInfuserResourcesPacket;
 import de.tobfal.infundere.recipe.OreInfuserRecipe;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
@@ -37,26 +32,25 @@ import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
-import software.bernie.example.block.entity.FertilizerBlockEntity;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
-import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animatable.instance.SingletonAnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.*;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.RenderUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
 public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, ITickableBlockEntity, GeoBlockEntity {
 
+    //<editor-fold desc="Constants">
     private static final RawAnimation PISTON_ANIMS = RawAnimation.begin().thenPlay("ore_infuser.piston");
+    //</editor-fold>
 
+    //<editor-fold desc="Properties">
     public final ItemStackHandler itemHandler = new ItemStackHandler(1) {
         @Override
         protected void onContentsChanged(int slot) {
@@ -72,7 +66,6 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
                 if (level.getRecipeManager().getRecipeFor(OreInfuserRecipe.Type.INSTANCE, inventory, level).isEmpty()) {
                     return stack;
                 }
-                ;
             }
             return super.insertItem(slot, stack, simulate);
         }
@@ -80,16 +73,17 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
 
     protected final ContainerData data;
     public int processTime = 0;
-    public int maxProcessTime = Config.ORE_INFUSER_PROCESS_TIME.get();
+    public int maxProcessTime = 1000;
     public Block blockAbove;
     public ResourceLocation processBackgroundResourceLocation;
     public ResourceLocation processResourceLocation;
     public OreInfuserRecipe currentRecipe;
-    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
-
-    private AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
     public boolean playAnimation;
+    private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
+    private AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
+    //</editor-fold>
 
+    //<editor-fold desc="Constructor">
     public OreInfuserBlockEntity(BlockPos pPos, BlockState pBlockState) {
         super(ModBlockEntities.ORE_INFUSER.get(), pPos, pBlockState);
 
@@ -117,24 +111,19 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
             }
         };
     }
+    //</editor-fold>
 
-    @Nullable
-    private static OreInfuserRecipe getRecipeFor(SimpleContainer simpleContainer, Block ingredientBlock, Level level) {
-        return level.getRecipeManager().getRecipes().stream()
-                .filter(recipe -> recipe.getType() == OreInfuserRecipe.Type.INSTANCE).map(OreInfuserRecipe.class::cast)
-                .filter(recipe -> recipe.matches(simpleContainer, level) && recipe.hasBlockAsIngredient(ingredientBlock, level)).findFirst().orElse(null);
-    }
-
-    private static boolean isBlockIngredientOrOutput(Block block, Level level) {
-        return level.getRecipeManager().getRecipes().stream()
-                .filter(recipe -> recipe.getType() == OreInfuserRecipe.Type.INSTANCE).map(OreInfuserRecipe.class::cast)
-                .anyMatch(recipe -> recipe.hasBlockAsIngredient(block, level) || recipe.hasBlockAsResult(block, level));
-    }
-
+    //<editor-fold desc="Methods">
     @NotNull
     @Override
     public Component getDisplayName() {
         return Component.translatable("block.infundere.ore_infuser");
+    }
+
+    @Nullable
+    @Override
+    public OreInfuserMenu createMenu(int pContainerId, @NotNull Inventory pPlayerInventory, @NotNull Player pPlayer) {
+        return new OreInfuserMenu(pContainerId, pPlayerInventory, this, this.data);
     }
 
     @Nonnull
@@ -171,8 +160,21 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
         lazyItemHandler = LazyOptional.of(() -> itemHandler);
     }
 
-    public OreInfuserMenu createMenu(int pContainerId, @NotNull Inventory pInventory, @NotNull Player pPlayer) {
-        return new OreInfuserMenu(pContainerId, pInventory, this, this.data);
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
+        controllerRegistrar.add(new AnimationController<>(this, state -> {
+            if (state.getAnimatable().playAnimation) {
+                state.resetCurrentAnimation();
+                state.getAnimatable().playAnimation = false;
+                return state.setAndContinue(PISTON_ANIMS);
+            }
+            return PlayState.CONTINUE;
+        }));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
     }
 
     @Override
@@ -222,6 +224,7 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
 
         InfunderePacketHandler.INSTANCE.send(PacketDistributor.TRACKING_CHUNK.with(() -> this.level.getChunkAt(this.worldPosition)),
                 new ClientboundOreInfuserResourcesPacket(this.getBlockPos(), processBackgroundResourceLocation, processResourceLocation, this.processTime >= this.maxProcessTime));
+
         if (this.processTime < this.maxProcessTime) {
             return;
         }
@@ -238,6 +241,19 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
         this.level.playSound(null, posAbove, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 10.0f, 1.4f);
     }
 
+    @Nullable
+    private static OreInfuserRecipe getRecipeFor(SimpleContainer simpleContainer, Block ingredientBlock, Level level) {
+        return level.getRecipeManager().getRecipes().stream()
+                .filter(recipe -> recipe.getType() == OreInfuserRecipe.Type.INSTANCE).map(OreInfuserRecipe.class::cast)
+                .filter(recipe -> recipe.matches(simpleContainer, level) && recipe.hasBlockAsIngredient(ingredientBlock, level)).findFirst().orElse(null);
+    }
+
+    private static boolean isBlockIngredientOrOutput(Block block, Level level) {
+        return level.getRecipeManager().getRecipes().stream()
+                .filter(recipe -> recipe.getType() == OreInfuserRecipe.Type.INSTANCE).map(OreInfuserRecipe.class::cast)
+                .anyMatch(recipe -> recipe.hasBlockAsIngredient(block, level) || recipe.hasBlockAsResult(block, level));
+    }
+
     private OreInfuserRecipe getRecipe(Block blockAbove) {
         SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
         for (int i = 0; i < itemHandler.getSlots(); i++) {
@@ -252,20 +268,13 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
         this.processTime = 0;
     }
 
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        controllerRegistrar.add(new AnimationController<>(this, state -> {
-            if (state.getAnimatable().playAnimation) {
-                state.resetCurrentAnimation();
-                state.getAnimatable().playAnimation = false;
-                return state.setAndContinue(PISTON_ANIMS);
-            }
-            return PlayState.CONTINUE;
-        }));
+    public void dropContents() {
+        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
+        for (int i = 0; i < itemHandler.getSlots(); i++) {
+            inventory.setItem(i, itemHandler.getStackInSlot(i));
+        }
+        assert this.level != null;
+        Containers.dropContents(this.level, this.worldPosition, inventory);
     }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return cache;
-    }
+    //</editor-fold>
 }

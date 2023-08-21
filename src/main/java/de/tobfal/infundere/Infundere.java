@@ -1,6 +1,7 @@
 package de.tobfal.infundere;
 
 import de.tobfal.infundere.client.OreInfuserBlockRenderer;
+import de.tobfal.infundere.client.screen.BreacerScreen;
 import de.tobfal.infundere.client.screen.OreInfuserScreen;
 import de.tobfal.infundere.init.*;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -44,8 +45,8 @@ public class Infundere {
     }
 
     private void clientSetup(final FMLCommonSetupEvent event) {
-
         MenuScreens.register(ModMenuTypes.ORE_INFUSER_MENU.get(), OreInfuserScreen::new);
+        MenuScreens.register(ModMenuTypes.BREACER_MENU.get(), BreacerScreen::new);
     }
 
     private void setup(final FMLCommonSetupEvent event) {

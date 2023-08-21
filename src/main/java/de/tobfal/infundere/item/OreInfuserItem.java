@@ -1,8 +1,6 @@
 package de.tobfal.infundere.item;
 
 import de.tobfal.infundere.Infundere;
-import de.tobfal.infundere.block.menu.OreInfuserMenu;
-import de.tobfal.infundere.client.OreInfuserBlockModel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;

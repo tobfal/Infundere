@@ -4,7 +4,6 @@ import de.tobfal.infundere.Infundere;
 import de.tobfal.infundere.block.entity.OreInfuserBlockEntity;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.DefaultedBlockGeoModel;
-import software.bernie.geckolib.model.GeoModel;
 
 public class OreInfuserBlockModel extends DefaultedBlockGeoModel<OreInfuserBlockEntity> {
     public OreInfuserBlockModel() {

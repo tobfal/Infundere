@@ -14,12 +14,17 @@ import org.jetbrains.annotations.NotNull;
 
 public class OreInfuserScreen extends AbstractContainerScreen<OreInfuserMenu> {
 
+    //<editor-fold desc="Constants">
     private static final ResourceLocation TEXTURE = new ResourceLocation(Infundere.MODID, "textures/gui/ore_infuser_gui.png");
+    //</editor-fold>
 
+    //<editor-fold desc="Constructor">
     public OreInfuserScreen(OreInfuserMenu pMenu, Inventory pPlayerInventory, Component pTitle) {
         super(pMenu, pPlayerInventory, pTitle);
     }
+    //</editor-fold>
 
+    //<editor-fold desc="Methods">
     @Override
     protected void renderBg(@NotNull GuiGraphics pGuiGraphics, float pPartialTick, int pMouseX, int pMouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
@@ -57,4 +62,5 @@ public class OreInfuserScreen extends AbstractContainerScreen<OreInfuserMenu> {
         int x = pMouseX - (width - imageWidth) / 2;
         int y = pMouseY - (height - imageHeight) / 2;
     }
+    //</editor-fold>
 }

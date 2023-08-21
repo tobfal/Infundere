@@ -1,7 +1,6 @@
 package de.tobfal.infundere.datagen;
 
 import de.tobfal.infundere.Infundere;
-import de.tobfal.infundere.init.ModBlocks;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
