@@ -80,7 +80,7 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
     public OreInfuserRecipe currentRecipe;
     public boolean playAnimation;
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
-    private AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
+    private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
     //</editor-fold>
 
     //<editor-fold desc="Constructor">
@@ -241,6 +241,16 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
         this.level.playSound(null, posAbove, SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.BLOCKS, 10.0f, 1.4f);
     }
 
+    private OreInfuserRecipe getRecipe(Block blockAbove) {
+        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
+        for (int i = 0; i < itemHandler.getSlots(); i++) {
+            inventory.setItem(i, itemHandler.getStackInSlot(i));
+        }
+
+        assert level != null;
+        return getRecipeFor(inventory, blockAbove, level);
+    }
+
     @Nullable
     private static OreInfuserRecipe getRecipeFor(SimpleContainer simpleContainer, Block ingredientBlock, Level level) {
         return level.getRecipeManager().getRecipes().stream()
@@ -252,16 +262,6 @@ public class OreInfuserBlockEntity extends BlockEntity implements MenuProvider, 
         return level.getRecipeManager().getRecipes().stream()
                 .filter(recipe -> recipe.getType() == OreInfuserRecipe.Type.INSTANCE).map(OreInfuserRecipe.class::cast)
                 .anyMatch(recipe -> recipe.hasBlockAsIngredient(block, level) || recipe.hasBlockAsResult(block, level));
-    }
-
-    private OreInfuserRecipe getRecipe(Block blockAbove) {
-        SimpleContainer inventory = new SimpleContainer(itemHandler.getSlots());
-        for (int i = 0; i < itemHandler.getSlots(); i++) {
-            inventory.setItem(i, itemHandler.getStackInSlot(i));
-        }
-
-        assert level != null;
-        return getRecipeFor(inventory, blockAbove, level);
     }
 
     private void resetProcess() {

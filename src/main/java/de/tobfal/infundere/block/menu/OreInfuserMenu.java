@@ -1,6 +1,5 @@
 package de.tobfal.infundere.block.menu;
 
-import de.tobfal.infundere.Infundere;
 import de.tobfal.infundere.block.entity.OreInfuserBlockEntity;
 import de.tobfal.infundere.init.ModMenuTypes;
 import de.tobfal.infundere.recipe.OreInfuserRecipe;

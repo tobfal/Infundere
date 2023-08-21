@@ -10,8 +10,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public class ModBlockEntities {
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Infundere.MODID);
 
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Infundere.MODID);
     public static final RegistryObject<BlockEntityType<OreInfuserBlockEntity>> ORE_INFUSER = BLOCK_ENTITIES.register("ore_infuser",
             () -> BlockEntityType.Builder.of(OreInfuserBlockEntity::new, ModBlocks.ORE_INFUSER.get()).build(null));
     public static final RegistryObject<BlockEntityType<BreacerBlockEntity>> BREACER = BLOCK_ENTITIES.register("breacer",

@@ -17,6 +17,7 @@ public class ModBlockLootTables extends BlockLootSubProvider {
     @Override
     protected void generate() {
         this.dropSelf(ModBlocks.ORE_INFUSER.get());
+        this.dropSelf(ModBlocks.BREACER.get());
     }
 
     @NotNull

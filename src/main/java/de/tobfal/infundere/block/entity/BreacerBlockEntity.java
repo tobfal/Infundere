@@ -55,10 +55,10 @@ public class BreacerBlockEntity extends BlockEntity implements MenuProvider, ITi
     };
 
     protected final ContainerData data;
+    private final BlockPos blockPosToBreak = this.getBlockPos().relative(getBlockState().getValue(BlockStateProperties.FACING));
     public int processTime = 0;
     public int maxProcessTime = 50;
     private Block lastBlockSet = Blocks.AIR;
-    private final BlockPos blockPosToBreak = this.getBlockPos().relative(getBlockState().getValue(BlockStateProperties.FACING));
     private LazyOptional<IItemHandler> lazyItemHandler = LazyOptional.empty();
     //</editor-fold>
 
@@ -205,7 +205,7 @@ public class BreacerBlockEntity extends BlockEntity implements MenuProvider, ITi
         }
 
         assert level != null;
-        Block block = ((BlockItem)itemStack.getItem()).getBlock();
+        Block block = ((BlockItem) itemStack.getItem()).getBlock();
         Block blockObstructing = level.getBlockState(this.blockPosToBreak).getBlock();
 
         if (!blockObstructing.equals(Blocks.AIR)) {

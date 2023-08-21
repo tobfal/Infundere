@@ -1,9 +1,9 @@
 {
-	"parent": "block/orientable",
-	"textures": {
-		"top": "infundere:block/breacer_main",
-		"front": "infundere:block/breacer_action",
-		"side": "infundere:block/breacer_main",
-		"particle": "infundere:block/breacer_main"
-	}
+  "parent": "block/orientable",
+  "textures": {
+    "top": "infundere:block/breacer_main",
+    "front": "infundere:block/breacer_action",
+    "side": "infundere:block/breacer_main",
+    "particle": "infundere:block/breacer_main"
+  }
 }

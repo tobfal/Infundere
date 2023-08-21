@@ -1,6 +1,6 @@
 {
   "type": "infundere:ore_infuser",
-  "blockIngredientItem": {
+  "blockIngredient": {
     "item": "minecraft:deepslate"
   },
   "category": "misc",

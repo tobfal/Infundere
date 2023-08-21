@@ -29,11 +29,18 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 
 public class OreInfuserRecipeCategory implements IRecipeCategory<OreInfuserRecipe> {
+
+    //<editor-fold desc="Constants">
     public static final ResourceLocation UID = new ResourceLocation(Infundere.MODID, "ore_infuser");
     public static final ResourceLocation TEXTURE = new ResourceLocation(Infundere.MODID, "textures/gui/ore_infuser_recipe_gui.png");
+    //</editor-fold>
+
+    //<editor-fold desc="Properties">
     protected final IDrawable oreInfuserBlock;
     private final IGuiHelper guiHelper;
+    //</editor-fold>
 
+    //<editor-fold desc="Methods">
     public OreInfuserRecipeCategory(IGuiHelper guiHelper) {
         this.guiHelper = guiHelper;
         oreInfuserBlock = guiHelper.createDrawableItemStack(new ItemStack(ModBlocks.ORE_INFUSER.get().asItem()));
@@ -65,8 +72,8 @@ public class OreInfuserRecipeCategory implements IRecipeCategory<OreInfuserRecip
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, OreInfuserRecipe recipe, @NotNull IFocusGroup focuses) {
-        builder.addSlot(RecipeIngredientRole.INPUT, 11 + 1, 19 + 1).addIngredients(recipe.getContainerIngredient());
-        builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addItemStack(recipe.getBlockItemIngredient());
+        builder.addSlot(RecipeIngredientRole.INPUT, 11 + 1, 19 + 1).addIngredients(recipe.getItemIngredient());
+        builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addIngredients(recipe.getBlockIngredient());
         builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT).addItemStack(recipe.result);
         builder.addInvisibleIngredients(RecipeIngredientRole.CATALYST).addItemStack(new ItemStack(ModBlocks.ORE_INFUSER.get()));
     }
@@ -118,5 +125,5 @@ public class OreInfuserRecipeCategory implements IRecipeCategory<OreInfuserRecip
 
         bufferSource.endBatch();
     }
-
+    //</editor-fold>
 }

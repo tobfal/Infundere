@@ -13,6 +13,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public class ModMenuTypes {
+
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, Infundere.MODID);
 
     public static final RegistryObject<MenuType<OreInfuserMenu>> ORE_INFUSER_MENU = registerMenuType(OreInfuserMenu::new, "ore_infuser_menu");

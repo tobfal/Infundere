@@ -18,27 +18,32 @@ import org.jetbrains.annotations.Nullable;
 
 public class OreInfuserRecipe implements Recipe<SimpleContainer> {
 
+    //<editor-fold desc="Properties">
     public final ResourceLocation id;
     public final ItemStack result;
-    private final Ingredient containerIngredient;
-    private final ItemStack blockIngredientItem;
+    private final Ingredient itemIngredient;
+    private final Ingredient blockIngredient;
     private final int processTime;
+    //</editor-fold>
 
-    public OreInfuserRecipe(ResourceLocation id, ItemStack result, Ingredient containerIngredient, ItemStack blockIngredientItem, int processTime) {
+    //<editor-fold desc="Constructor">
+    public OreInfuserRecipe(ResourceLocation id, ItemStack result, Ingredient itemIngredient, Ingredient blockIngredient, int processTime) {
         this.id = id;
         this.result = result;
-        this.containerIngredient = containerIngredient;
-        this.blockIngredientItem = blockIngredientItem;
+        this.itemIngredient = itemIngredient;
+        this.blockIngredient = blockIngredient;
         this.processTime = processTime;
     }
+    //</editor-fold>
 
+    //<editor-fold desc="Methods">
     @Override
     public boolean matches(@NotNull SimpleContainer pContainer, Level pLevel) {
         if (pLevel.isClientSide()) {
             return false;
         }
 
-        return this.containerIngredient.test(pContainer.getItem(0));
+        return this.itemIngredient.test(pContainer.getItem(0));
     }
 
     public boolean hasBlockAsIngredient(Block block, Level pLevel) {
@@ -46,7 +51,7 @@ public class OreInfuserRecipe implements Recipe<SimpleContainer> {
             return false;
         }
 
-        return block == getIngredientBlock();
+        return this.blockIngredient.test(new ItemStack(block.asItem()));
     }
 
     public boolean hasBlockAsResult(Block block, Level pLevel) {
@@ -96,20 +101,17 @@ public class OreInfuserRecipe implements Recipe<SimpleContainer> {
         return ModRecipes.ORE_INFUSER_TYPE.get();
     }
 
-    public Ingredient getContainerIngredient() {
-        return this.containerIngredient;
+    public Ingredient getItemIngredient() {
+        return this.itemIngredient;
     }
 
-    public ItemStack getBlockItemIngredient() {
-        return this.blockIngredientItem;
+    public Ingredient getBlockIngredient() {
+        return this.blockIngredient;
     }
 
     public Block getIngredientBlock() {
-        if (!(this.blockIngredientItem.getItem() instanceof BlockItem)) {
-            return null;
-        }
-
-        return ((BlockItem) this.blockIngredientItem.getItem()).getBlock();
+        // TODO: Temporarily returns only first matching block
+        return ((BlockItem) this.blockIngredient.getItems()[0].getItem()).getBlock();
     }
 
     public Block getResultBlock() {
@@ -136,37 +138,42 @@ public class OreInfuserRecipe implements Recipe<SimpleContainer> {
         @Override
         public OreInfuserRecipe fromJson(@NotNull ResourceLocation pRecipeId, @NotNull JsonObject pSerializedRecipe) {
             ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "result"));
-            Ingredient itemIngredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "itemIngredient"));
-            ItemStack blockIngredientItem = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "blockIngredientItem"));
-            int processTime = GsonHelper.getAsInt(pSerializedRecipe, "processTime");
-
             if (!(result.getItem() instanceof BlockItem)) {
                 result = ItemStack.EMPTY;
             }
 
-            if (!(blockIngredientItem.getItem() instanceof BlockItem)) {
-                blockIngredientItem = ItemStack.EMPTY;
-            }
+            int processTime = GsonHelper.getAsInt(pSerializedRecipe, "processTime");
 
-            return new OreInfuserRecipe(pRecipeId, result, itemIngredient, blockIngredientItem, processTime);
+            Ingredient itemIngredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "itemIngredient"));
+            Ingredient blockIngredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(pSerializedRecipe, "blockIngredient"));
+
+            /** TODO: Check if blockIngredient only contains BlockItems
+                This does not work:
+                if (Arrays.stream(blockIngredient.getItems()).anyMatch((itemStack) -> !(itemStack.getItem() instanceof BlockItem))) {
+                    return new OreInfuserRecipe(pRecipeId, result, itemIngredient, Ingredient.EMPTY, processTime);
+                }
+            **/
+
+            return new OreInfuserRecipe(pRecipeId, result, itemIngredient, blockIngredient, processTime);
         }
 
         @Override
         public @Nullable OreInfuserRecipe fromNetwork(@NotNull ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
             ItemStack result = pBuffer.readItem();
             Ingredient itemIngredient = Ingredient.fromNetwork(pBuffer);
-            ItemStack blockItemIngredient = pBuffer.readItem();
+            Ingredient blockIngredient = Ingredient.fromNetwork(pBuffer);
             int processTime = pBuffer.readInt();
 
-            return new OreInfuserRecipe(pRecipeId, result, itemIngredient, blockItemIngredient, processTime);
+            return new OreInfuserRecipe(pRecipeId, result, itemIngredient, blockIngredient, processTime);
         }
 
         @Override
         public void toNetwork(FriendlyByteBuf pBuffer, OreInfuserRecipe pRecipe) {
             pBuffer.writeItem(pRecipe.result);
-            pRecipe.getContainerIngredient().toNetwork(pBuffer);
-            pBuffer.writeItem(pRecipe.blockIngredientItem);
+            pRecipe.getItemIngredient().toNetwork(pBuffer);
+            pRecipe.getBlockIngredient().toNetwork(pBuffer);
             pBuffer.writeInt(pRecipe.processTime);
         }
     }
+    //</editor-fold>
 }
