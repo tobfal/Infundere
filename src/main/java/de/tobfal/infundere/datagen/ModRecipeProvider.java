@@ -30,6 +30,14 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy(getHasName(ModItems.COAL_INFUSION_POWDER.get()), has(ModItems.COAL_INFUSION_POWDER.get()))
                 .save(pWriter);
 
+        OreInfuserRecipeBuilder.infusing(ModItems.COPPER_INFUSION_POWDER.get(), Blocks.STONE, Blocks.COPPER_ORE, RecipeCategory.MISC, 100)
+                .unlockedBy(getHasName(ModItems.COPPER_INFUSION_POWDER.get()), has(ModItems.COPPER_INFUSION_POWDER.get()))
+                .save(pWriter);
+
+        OreInfuserRecipeBuilder.infusing(ModItems.COPPER_INFUSION_POWDER.get(), Blocks.DEEPSLATE, Blocks.DEEPSLATE_COPPER_ORE, RecipeCategory.MISC, 100)
+                .unlockedBy(getHasName(ModItems.COPPER_INFUSION_POWDER.get()), has(ModItems.COPPER_INFUSION_POWDER.get()))
+                .save(pWriter);
+
         OreInfuserRecipeBuilder.infusing(ModItems.IRON_INFUSION_POWDER.get(), Blocks.STONE, Blocks.IRON_ORE, RecipeCategory.MISC, 100)
                 .unlockedBy(getHasName(ModItems.IRON_INFUSION_POWDER.get()), has(ModItems.IRON_INFUSION_POWDER.get()))
                 .save(pWriter);
@@ -37,22 +45,57 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         OreInfuserRecipeBuilder.infusing(ModItems.IRON_INFUSION_POWDER.get(), Blocks.DEEPSLATE, Blocks.DEEPSLATE_IRON_ORE, RecipeCategory.MISC, 100)
                 .unlockedBy(getHasName(ModItems.IRON_INFUSION_POWDER.get()), has(ModItems.IRON_INFUSION_POWDER.get()))
                 .save(pWriter);
+
+        OreInfuserRecipeBuilder.infusing(ModItems.GOLD_INFUSION_POWDER.get(), Blocks.STONE, Blocks.GOLD_ORE, RecipeCategory.MISC, 100)
+                .unlockedBy(getHasName(ModItems.GOLD_INFUSION_POWDER.get()), has(ModItems.GOLD_INFUSION_POWDER.get()))
+                .save(pWriter);
+
+        OreInfuserRecipeBuilder.infusing(ModItems.GOLD_INFUSION_POWDER.get(), Blocks.DEEPSLATE, Blocks.DEEPSLATE_GOLD_ORE, RecipeCategory.MISC, 100)
+                .unlockedBy(getHasName(ModItems.GOLD_INFUSION_POWDER.get()), has(ModItems.GOLD_INFUSION_POWDER.get()))
+                .save(pWriter);
+
+        OreInfuserRecipeBuilder.infusing(ModItems.GOLD_INFUSION_POWDER.get(), Blocks.NETHERRACK, Blocks.NETHER_GOLD_ORE, RecipeCategory.MISC, 100)
+                .unlockedBy(getHasName(ModItems.GOLD_INFUSION_POWDER.get()), has(ModItems.GOLD_INFUSION_POWDER.get()))
+                .save(pWriter);
+
+        OreInfuserRecipeBuilder.infusing(ModItems.GLOWSTONE_INFUSION_POWDER.get(), Blocks.GLASS, Blocks.GLOWSTONE, RecipeCategory.MISC, 100)
+                .unlockedBy(getHasName(ModItems.GLOWSTONE_INFUSION_POWDER.get()), has(ModItems.GLOWSTONE_INFUSION_POWDER.get()))
+                .save(pWriter);
         //</editor-fold>
 
         //<editor-fold desc="Shapeless">
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.COAL_INFUSION_POWDER.get(), 3)
-                .requires(Items.GUNPOWDER)
-                .requires(Items.GUNPOWDER)
+                .requires(Items.GUNPOWDER,2)
                 .requires(Items.CHARCOAL)
                 .unlockedBy(getHasName(Items.GUNPOWDER), has(Items.GUNPOWDER))
                 .save(pWriter);
 
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.COPPER_INFUSION_POWDER.get(), 3)
+                .requires(Items.GUNPOWDER,2)
+                .requires(Items.COAL)
+                .requires(Items.ROTTEN_FLESH)
+                .unlockedBy(getHasName(Items.COAL), has(Items.COAL))
+                .save(pWriter);
+
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.IRON_INFUSION_POWDER.get(), 3)
-                .requires(Items.GUNPOWDER)
-                .requires(Items.GUNPOWDER)
+                .requires(Items.GUNPOWDER,2)
                 .requires(Items.COAL)
                 .requires(Items.BONE_MEAL)
                 .unlockedBy(getHasName(Items.COAL), has(Items.COAL))
+                .save(pWriter);
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.GLOWSTONE_INFUSION_POWDER.get(), 3)
+                .requires(Items.GUNPOWDER,2)
+                .requires(Items.YELLOW_DYE)
+                .requires(Items.COAL)
+                .unlockedBy(getHasName(Items.COAL), has(Items.COAL))
+                .save(pWriter);
+
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.GOLD_INFUSION_POWDER.get(), 3)
+                .requires(Items.GUNPOWDER,2)
+                .requires(Items.IRON_INGOT,2)
+                .requires(Items.GLOWSTONE)
+                .unlockedBy(getHasName(Items.IRON_INGOT), has(Items.IRON_INGOT))
                 .save(pWriter);
         //</editor-fold>
     }

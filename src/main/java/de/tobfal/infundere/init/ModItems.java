@@ -2,6 +2,9 @@ package de.tobfal.infundere.init;
 
 import de.tobfal.infundere.Infundere;
 import de.tobfal.infundere.item.OreInfuserItem;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -10,11 +13,13 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public class ModItems {
+
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Infundere.MODID);
 
     public static final RegistryObject<BlockItem> ORE_INFUSER = ModCreativeTabs.addToTab(ITEMS.register("ore_infuser",
             () -> new OreInfuserItem(ModBlocks.ORE_INFUSER.get(), new Item.Properties())));
 
+    //<editor-fold desc="Infusion Powder">
     public static final RegistryObject<Item> COAL_INFUSION_POWDER = ModCreativeTabs.addToTab(ITEMS.register("coal_infusion_powder",
             () -> new Item(new Item.Properties())));
     public static final RegistryObject<Item> COPPER_INFUSION_POWDER = ModCreativeTabs.addToTab(ITEMS.register("copper_infusion_powder",
@@ -31,8 +36,13 @@ public class ModItems {
             () -> new Item(new Item.Properties())));
     public static final RegistryObject<Item> REDSTONE_INFUSION_POWDER = ModCreativeTabs.addToTab(ITEMS.register("redstone_infusion_powder",
             () -> new Item(new Item.Properties())));
+    public static final RegistryObject<Item> GLOWSTONE_INFUSION_POWDER = ModCreativeTabs.addToTab(ITEMS.register("glowstone_infusion_powder",
+            () -> new Item(new Item.Properties())));
+    //</editor-fold>
 
+    //<editor-fold desc="Register">
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }
+    //</editor-fold>
 }
