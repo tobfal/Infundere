@@ -8,10 +8,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -31,6 +33,13 @@ public class ModCreativeTabs {
 
     public static <T extends Item> RegistryObject<T> addToTab(RegistryObject<T> itemLike) {
         INFUNDERE_TAB_ITEMS.add(itemLike);
+        return itemLike;
+    }
+
+    public static <T extends Item> RegistryObject<T> addToTab(RegistryObject<T> itemLike, String[] modTargets) {
+        if (Arrays.stream(modTargets).anyMatch(modTarget -> ModList.get().isLoaded(modTarget))) {
+            INFUNDERE_TAB_ITEMS.add(itemLike);
+        }
         return itemLike;
     }
 

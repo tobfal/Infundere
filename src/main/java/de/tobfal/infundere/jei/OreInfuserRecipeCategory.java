@@ -25,6 +25,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.model.data.ModelData;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 
@@ -74,7 +75,14 @@ public class OreInfuserRecipeCategory implements IRecipeCategory<OreInfuserRecip
     public void setRecipe(IRecipeLayoutBuilder builder, OreInfuserRecipe recipe, @NotNull IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 11 + 1, 19 + 1).addIngredients(recipe.getItemIngredient());
         builder.addInvisibleIngredients(RecipeIngredientRole.INPUT).addIngredients(recipe.getBlockIngredient());
-        builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT).addItemStack(recipe.result);
+
+        if (recipe.result.left().isPresent()) {
+            builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT).addItemStack(recipe.result.left().get());
+        } else if (recipe.result.right().isPresent()) {
+            ForgeRegistries.ITEMS.tags().getTag(recipe.result.right().get())
+                    .forEach((item) -> builder.addInvisibleIngredients(RecipeIngredientRole.OUTPUT).addItemStack(new ItemStack(item)));
+        }
+
         builder.addInvisibleIngredients(RecipeIngredientRole.CATALYST).addItemStack(new ItemStack(ModBlocks.ORE_INFUSER.get()));
     }
 

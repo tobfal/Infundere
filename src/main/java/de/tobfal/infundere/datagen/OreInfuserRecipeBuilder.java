@@ -1,8 +1,10 @@
 package de.tobfal.infundere.datagen;
 
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Either;
 import de.tobfal.infundere.init.ModRecipes;
 import de.tobfal.infundere.recipe.OreInfuserRecipe;
+import de.tobfal.infundere.utils.ItemTagUtils;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.CriterionTriggerInstance;
@@ -12,6 +14,7 @@ import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeBuilder;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.CookingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -30,7 +33,7 @@ public class OreInfuserRecipeBuilder implements RecipeBuilder {
     //<editor-fold desc="Properties">
     private final RecipeCategory category;
     private final CookingBookCategory bookCategory;
-    private final Item result;
+    private final Either<Item, TagKey<Item>> result;
     private final Ingredient itemIngredient;
     private final Ingredient blockIngredient;
     private final int processTime;
@@ -40,10 +43,10 @@ public class OreInfuserRecipeBuilder implements RecipeBuilder {
     //</editor-fold>
 
     //<editor-fold desc="Constructor">
-    private OreInfuserRecipeBuilder(RecipeCategory pCategory, CookingBookCategory pBookCategory, ItemLike pResult, Ingredient pItemIngredient, Ingredient pBlockIngredient, int pProcessTime, RecipeSerializer<OreInfuserRecipe> pSerializer) {
+    private OreInfuserRecipeBuilder(RecipeCategory pCategory, CookingBookCategory pBookCategory, Either<Item, TagKey<Item>> pResult, Ingredient pItemIngredient, Ingredient pBlockIngredient, int pProcessTime, RecipeSerializer<OreInfuserRecipe> pSerializer) {
         this.category = pCategory;
         this.bookCategory = pBookCategory;
-        this.result = pResult.asItem();
+        this.result = pResult;
         this.itemIngredient = pItemIngredient;
         this.blockIngredient = pBlockIngredient;
         this.processTime = pProcessTime;
@@ -53,7 +56,11 @@ public class OreInfuserRecipeBuilder implements RecipeBuilder {
 
     //<editor-fold desc="Methods">
     public static OreInfuserRecipeBuilder infusing(ItemLike pItemIngredient, Block pBlockIngredient, Block pResultBlock, RecipeCategory pCategory, int pProcessTime) {
-        return new OreInfuserRecipeBuilder(pCategory, CookingBookCategory.MISC, pResultBlock.asItem(), Ingredient.of(pItemIngredient), Ingredient.of(pBlockIngredient), pProcessTime, ModRecipes.ORE_INFUSER_SERIALIZER.get());
+        return new OreInfuserRecipeBuilder(pCategory, CookingBookCategory.MISC, Either.left(pResultBlock.asItem()), Ingredient.of(pItemIngredient), Ingredient.of(pBlockIngredient), pProcessTime, ModRecipes.ORE_INFUSER_SERIALIZER.get());
+    }
+
+    public static OreInfuserRecipeBuilder infusing(ItemLike pItemIngredient, Block pBlockIngredient, TagKey<Item> pResultTag, RecipeCategory pCategory, int pProcessTime) {
+        return new OreInfuserRecipeBuilder(pCategory, CookingBookCategory.MISC, Either.right(pResultTag), Ingredient.of(pItemIngredient), Ingredient.of(pBlockIngredient), pProcessTime, ModRecipes.ORE_INFUSER_SERIALIZER.get());
     }
 
     @NotNull
@@ -73,7 +80,12 @@ public class OreInfuserRecipeBuilder implements RecipeBuilder {
     @NotNull
     @Override
     public Item getResult() {
-        return this.result;
+        if (this.result.left().isPresent()) {
+            return this.result.left().get();
+        } else if (this.result.right().isPresent()) {
+            return ItemTagUtils.getFirstItem(this.result.right().get());
+        }
+        throw new RuntimeException("TODO");
     }
 
     @Override
@@ -97,13 +109,13 @@ public class OreInfuserRecipeBuilder implements RecipeBuilder {
         private final CookingBookCategory category;
         private final Ingredient itemIngredient;
         private final Ingredient blockIngredient;
-        private final Item result;
+        private final Either<Item, TagKey<Item>> result;
         private final int processTime;
         private final Advancement.Builder advancement;
         private final ResourceLocation advancementId;
         private final RecipeSerializer<OreInfuserRecipe> serializer;
 
-        public Result(ResourceLocation pId, String pGroup, CookingBookCategory pCategory, Ingredient pItemIngredient, Ingredient pBlockIngredient, Item pResult, int pProcessTime, Advancement.Builder pAdvancement, ResourceLocation pAdvancementId, RecipeSerializer<OreInfuserRecipe> pSerializer) {
+        public Result(ResourceLocation pId, String pGroup, CookingBookCategory pCategory, Ingredient pItemIngredient, Ingredient pBlockIngredient, Either<Item, TagKey<Item>> pResult, int pProcessTime, Advancement.Builder pAdvancement, ResourceLocation pAdvancementId, RecipeSerializer<OreInfuserRecipe> pSerializer) {
             this.id = pId;
             this.group = pGroup;
             this.category = pCategory;
@@ -126,7 +138,13 @@ public class OreInfuserRecipeBuilder implements RecipeBuilder {
             pJson.add("blockIngredient", this.blockIngredient.toJson());
 
             JsonObject resultObject = new JsonObject();
-            resultObject.addProperty("item", Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(this.result)).toString());
+            if (this.result.left().isPresent()) {
+                resultObject.addProperty("item", Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(this.result.left().get())).toString());
+            } else if (this.result.right().isPresent()) {
+                resultObject.addProperty("tag", this.result.right().get().location().toString());
+            } else {
+                throw new RuntimeException("TODO");
+            }
             pJson.add("result", resultObject);
 
             pJson.addProperty("processTime", this.processTime);

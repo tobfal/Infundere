@@ -38,6 +38,25 @@ public class ModItems {
             () -> new Item(new Item.Properties())));
     public static final RegistryObject<Item> GLOWSTONE_INFUSION_POWDER = ModCreativeTabs.addToTab(ITEMS.register("glowstone_infusion_powder",
             () -> new Item(new Item.Properties())));
+
+    public static final RegistryObject<Item> ALUMINUM_INFUSION_POWDER = ModCreativeTabs.addToTab(ITEMS.register("aluminum_infusion_powder",
+            () -> new Item(new Item.Properties())), new String[]{"geckolib"});
+    public static final RegistryObject<Item> LEAD_INFUSION_POWDER = ModCreativeTabs.addToTab(ITEMS.register("lead_infusion_powder",
+            () -> new Item(new Item.Properties())), new String[]{"alltheores"});
+    public static final RegistryObject<Item> NICKEL_INFUSION_POWDER = ModCreativeTabs.addToTab(ITEMS.register("nickel_infusion_powder",
+            () -> new Item(new Item.Properties())), new String[]{"alltheores"});
+    public static final RegistryObject<Item> OSMIUM_INFUSION_POWDER = ModCreativeTabs.addToTab(ITEMS.register("osmium_infusion_powder",
+            () -> new Item(new Item.Properties())), new String[]{"alltheores"});
+    public static final RegistryObject<Item> PLATINUM_INFUSION_POWDER = ModCreativeTabs.addToTab(ITEMS.register("platinum_infusion_powder",
+            () -> new Item(new Item.Properties())), new String[]{"alltheores"});
+    public static final RegistryObject<Item> SILVER_INFUSION_POWDER = ModCreativeTabs.addToTab(ITEMS.register("silver_infusion_powder",
+            () -> new Item(new Item.Properties())), new String[]{"alltheores"});
+    public static final RegistryObject<Item> TIN_INFUSION_POWDER = ModCreativeTabs.addToTab(ITEMS.register("tin_infusion_powder",
+            () -> new Item(new Item.Properties())), new String[]{"alltheores"});
+    public static final RegistryObject<Item> URANIUM_INFUSION_POWDER = ModCreativeTabs.addToTab(ITEMS.register("uranium_infusion_powder",
+            () -> new Item(new Item.Properties())), new String[]{"alltheores"});
+    public static final RegistryObject<Item> ZINC_INFUSION_POWDER = ModCreativeTabs.addToTab(ITEMS.register("zinc_infusion_powder",
+            () -> new Item(new Item.Properties())), new String[]{"alltheores"});
     //</editor-fold>
 
     //<editor-fold desc="Register">

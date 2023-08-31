@@ -25,6 +25,17 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.IRON_INFUSION_POWDER);
         simpleItem(ModItems.LAPIS_LAZULI_INFUSION_POWDER);
         simpleItem(ModItems.REDSTONE_INFUSION_POWDER);
+        simpleItem(ModItems.GLOWSTONE_INFUSION_POWDER);
+
+        simpleItem(ModItems.ALUMINUM_INFUSION_POWDER);
+        simpleItem(ModItems.LEAD_INFUSION_POWDER);
+        simpleItem(ModItems.NICKEL_INFUSION_POWDER);
+        simpleItem(ModItems.OSMIUM_INFUSION_POWDER);
+        simpleItem(ModItems.PLATINUM_INFUSION_POWDER);
+        simpleItem(ModItems.SILVER_INFUSION_POWDER);
+        simpleItem(ModItems.TIN_INFUSION_POWDER);
+        simpleItem(ModItems.URANIUM_INFUSION_POWDER);
+        simpleItem(ModItems.ZINC_INFUSION_POWDER);
     }
 
     private ItemModelBuilder simpleItem(RegistryObject<Item> item) {

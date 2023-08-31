@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "infundere:item/osmium_infusion_powder"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "type": "forge:not",
+          "value": {
+            "type": "forge:tag_empty",
+            "tag": "forge:ores/aluminum"
+          }
+        }
+      ],
+      "recipe": {
+        "type": "infundere:ore_infuser",
+        "blockIngredient": {
+          "item": "minecraft:stone"
+        },
+        "category": "misc",
+        "itemIngredient": {
+          "item": "infundere:aluminum_infusion_powder"
+        },
+        "processTime": 100,
+        "result": {
+          "tag": "forge:ores/tin"
+        }
+      }
+    }
+  ]
+}
