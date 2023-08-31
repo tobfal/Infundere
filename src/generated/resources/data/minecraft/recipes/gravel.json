@@ -1,0 +1,14 @@
+{
+  "type": "infundere:ore_infuser",
+  "blockIngredient": {
+    "item": "minecraft:stone"
+  },
+  "category": "misc",
+  "itemIngredient": {
+    "item": "minecraft:bone_meal"
+  },
+  "processTime": 100,
+  "result": {
+    "item": "minecraft:gravel"
+  }
+}

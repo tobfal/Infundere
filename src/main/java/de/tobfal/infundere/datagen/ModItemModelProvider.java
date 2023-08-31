@@ -25,6 +25,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         simpleItem(ModItems.IRON_INFUSION_POWDER);
         simpleItem(ModItems.LAPIS_LAZULI_INFUSION_POWDER);
         simpleItem(ModItems.REDSTONE_INFUSION_POWDER);
+        simpleItem(ModItems.GLOWSTONE_INFUSION_POWDER);
+        simpleItem(ModItems.NETHER_QUARTZ_INFUSION_POWDER);
     }
 
     private ItemModelBuilder simpleItem(RegistryObject<Item> item) {

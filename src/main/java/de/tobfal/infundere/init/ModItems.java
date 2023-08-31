@@ -38,6 +38,8 @@ public class ModItems {
             () -> new Item(new Item.Properties())));
     public static final RegistryObject<Item> GLOWSTONE_INFUSION_POWDER = ModCreativeTabs.addToTab(ITEMS.register("glowstone_infusion_powder",
             () -> new Item(new Item.Properties())));
+    public static final RegistryObject<Item> NETHER_QUARTZ_INFUSION_POWDER = ModCreativeTabs.addToTab(ITEMS.register("nether_quartz_infusion_powder",
+            () -> new Item(new Item.Properties())));
     //</editor-fold>
 
     //<editor-fold desc="Register">

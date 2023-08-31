@@ -19,9 +19,9 @@ public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Infundere.MODID);
 
     public static final RegistryObject<Block> ORE_INFUSER = BLOCKS.register("ore_infuser",
-            () -> new OreInfuserBlock(BlockBehaviour.Properties.copy(Blocks.STONE).strength(3f).noOcclusion()));
+            () -> new OreInfuserBlock(BlockBehaviour.Properties.copy(Blocks.STONE).strength(3f).requiresCorrectToolForDrops().noOcclusion()));
     public static final RegistryObject<Block> BREACER = registerBlock("breacer",
-            () -> new BreacerBlock(BlockBehaviour.Properties.copy(Blocks.IRON_BLOCK).strength(3f)));
+            () -> new BreacerBlock(BlockBehaviour.Properties.copy(Blocks.STONE).strength(3f).requiresCorrectToolForDrops()));
 
     private static <T extends Block> void registerBlockItem(String name, boolean addToTab, RegistryObject<T> block) {
         if (addToTab) {

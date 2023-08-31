@@ -1,0 +1,14 @@
+{
+  "type": "infundere:ore_infuser",
+  "blockIngredient": {
+    "item": "minecraft:stone"
+  },
+  "category": "misc",
+  "itemIngredient": {
+    "item": "infundere:gold_infusion_powder"
+  },
+  "processTime": 100,
+  "result": {
+    "item": "minecraft:gold_ore"
+  }
+}

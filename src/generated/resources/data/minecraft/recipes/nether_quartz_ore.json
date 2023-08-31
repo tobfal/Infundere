@@ -1,0 +1,14 @@
+{
+  "type": "infundere:ore_infuser",
+  "blockIngredient": {
+    "item": "minecraft:netherrack"
+  },
+  "category": "misc",
+  "itemIngredient": {
+    "item": "infundere:nether_quartz_infusion_powder"
+  },
+  "processTime": 100,
+  "result": {
+    "item": "minecraft:nether_quartz_ore"
+  }
+}

@@ -1,5 +1,6 @@
 package de.tobfal.infundere.block.entity;
 
+import de.tobfal.infundere.Infundere;
 import de.tobfal.infundere.block.menu.BreacerMenu;
 import de.tobfal.infundere.init.ModBlockEntities;
 import de.tobfal.infundere.utils.BlockUtils;
@@ -8,6 +9,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -15,13 +17,16 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -43,6 +48,7 @@ public class BreacerBlockEntity extends BlockEntity implements MenuProvider, ITi
         @Override
         public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
             if (slot >= 6) {
+                // TODO: Don't allow inserting items in output slots
                 return super.insertItem(slot, stack, simulate);
             }
 
@@ -162,6 +168,7 @@ public class BreacerBlockEntity extends BlockEntity implements MenuProvider, ITi
         assert level != null;
         Block blockToBreak = level.getBlockState(this.blockPosToBreak).getBlock();
 
+
         if (blockToBreak == this.lastBlockSet) {
             return false;
         }
@@ -173,6 +180,13 @@ public class BreacerBlockEntity extends BlockEntity implements MenuProvider, ITi
         }
 
         if (this.processTime < this.maxProcessTime) {
+            return false;
+        }
+
+        FakePlayer fakePlayer = Infundere.getFakePlayer(level);
+        fakePlayer.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.IRON_PICKAXE));
+
+        if (!blockToBreak.defaultBlockState().canHarvestBlock(this.level, blockPosToBreak, fakePlayer)) {
             return false;
         }
 
